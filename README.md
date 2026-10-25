@@ -13,10 +13,11 @@ The theory makes three claims:
 
 Open `index.html` in a browser. It needs no build step. three.js loads from cdnjs.
 
-- **Simulation 1: the sheet.** A flat sheet (switchable to a dented 3D view) with universes as marbles. Each marble's
-  edge is its observable horizon. A *gravity reach* slider makes universes interact only when their edges are close.
-  Mergers past a threshold trigger big bangs that throw matter back out as new universes. The teal ring shows the
-  uneven (tidal) pull on our universe's edges.
+- **Simulation 1: the sheet.** A flat sheet (switchable to a dented 3D view). Each universe is a cloud of internal
+  weights, heavier near its centre, and each weight pulls separately. Every universe expands, so the pull at its centre
+  weakens over time. Nothing collapses. When two expanding universes overlap far enough, the colliding matter forms a
+  compact newborn universe (a big bang) that then expands too. Universes spread too thin dissolve into their neighbours.
+  Total mass is conserved. A *gravity reach* slider limits interactions to universes whose edges are close.
 - **Test 1: neighbours edge to edge.** A flat map of our universe (46.5 Gly radius) with neighbour universes that can
   touch our edge. Each universe's mass is spread over its whole disc. Click any galaxy to see its rotation curve
   compared with the flat measured curve. A gravity reach option adds a Yukawa fall-off.
@@ -29,7 +30,7 @@ Open `index.html` in a browser. It needs no build step. three.js loads from cdnj
 
 | Claim | Result |
 | --- | --- |
-| Neighbours beside us explain dark matter | Fails, even edge to edge. The pull is 10⁵–10⁶× too weak. It averages to zero around a galaxy (Gauss's law). A reach limit turns the average outward. Gravity also travels at light speed, so matter we can't see can't pull on us either. |
+| Neighbours beside us explain dark matter | Fails, even edge to edge. The pull is 10⁵–10⁶× too weak. It averages to zero around a galaxy (Gauss's law). A reach limit turns the average outward. (Light-speed limits on gravity don't rule it out if the neighbours' wells predate our universe.) |
 | Stacked sheets explain dark matter | Can match the measured curve to within ~2 km/s, if the sheets are closer than ~10 kpc and the hidden galaxy is ~15–25× the visible mass and ~15× more spread out. That is a dark-matter halo on another sheet (brane-world "shadow matter"). |
 | Collisions make big bangs | Plausible behaviour on the sheet. Real searches look for bubble-collision marks in the CMB (none confirmed). |
 | Uneven pull on our edges | The testable part. It predicts direction-dependent expansion and aligned large-scale CMB anomalies. |

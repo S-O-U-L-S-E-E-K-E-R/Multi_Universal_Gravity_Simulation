@@ -144,7 +144,7 @@ footer { font-size: 14px; color: var(--muted); }
     <p>The theory makes three claims. This page simulates each one and checks it against real numbers.</p>
     <ul>
       <li><strong>Dark matter is other universes.</strong> The extra gravity we measure in galaxies comes from neighbouring marbles, not unseen particles.</li>
-      <li><strong>Collisions make big bangs.</strong> Marbles drift together, merge into dense wells, and those wells become new universes.</li>
+      <li><strong>Collisions make big bangs.</strong> Expanding universes grow into each other, and the matter where they collide forms a dense new universe.</li>
       <li><strong>Our edges are pulled unevenly.</strong> Neighbours close to our edge tug harder on that side.</li>
     </ul>
   </header>
@@ -153,8 +153,8 @@ footer { font-size: 14px; color: var(--muted); }
     <div class="stack prose">
       <span class="eyebrow">Simulation 1 · the sheet</span>
       <h2>The multiverse on a flat sheet</h2>
-      <p>Each marble's edge (the outlined circle) is its observable horizon: the farthest its light can reach. Two universes can sit edge to edge without either seeing the other. Gravity only acts between two universes when their edges are within the <strong>gravity reach</strong>. Push the reach down, and universes far enough apart stop affecting each other at all. The colours on the sheet show the combined pull: brighter bands are deeper wells.</p>
-      <p>When a merged well passes the big-bang threshold it ignites, becomes a <strong>newborn universe</strong>, and throws some of its matter back out as new marbles. The <span class="ours">teal ring</span> shows how unevenly the neighbours pull on our edges, exaggerated so you can see it. Switch to the dented view to see the sheet in 3D.</p>
+      <p>Each universe is a cloud of <strong>internal weights</strong> (the dots), heavier toward its centre and lighter toward its edge. Every weight pulls on its own, so mass near a neighbour counts for more and mass on the far side counts for less. Every universe <strong>expands</strong>: its weights spread out, so the pull at its centre keeps getting weaker. Nothing collapses, and total mass never changes. Each universe's edge (the outlined circle) is its observable horizon: the farthest its light can reach. Two universes can sit edge to edge without either seeing the other. Gravity only acts between two universes when their edges are within the <strong>gravity reach</strong>. Push the reach down, and universes far enough apart stop affecting each other at all. The colours on the sheet show the combined pull: brighter bands are deeper wells.</p>
+      <p>When two expanding universes grow into each other far enough, the matter where they meet forms a dense <strong>newborn universe</strong>: a big bang. It takes a share of mass from both parents, starts small with a strong centre, and then expands like the rest. The <span class="ours">teal ring</span> shows how unevenly the neighbours pull on our edges, exaggerated so you can see it. Switch to the dented view to see the sheet in 3D.</p>
     </div>
     <div class="panel">
       <div class="viewport" id="vp">
@@ -175,7 +175,9 @@ footer { font-size: 14px; color: var(--muted); }
           <div class="stat"><b id="sCount">0</b><span>universes</span></div>
           <div class="stat"><b id="sBangs">0</b><span>big bangs</span></div>
           <div class="stat"><b id="sNear">0</b><span>neighbours in reach of ours</span></div>
-          <div class="stat"><b id="sTide">0%</b><span>uneven edge pull</span></div>
+          <div class="stat"><b id="sTide">0%</b><span>uneven edge pull (× own gravity)</span></div>
+          <div class="stat"><b id="sMass">0</b><span>total mass (stays fixed)</span></div>
+          <div class="stat"><b id="sCore">100%</b><span>our centre's pull vs. start</span></div>
         </div>
         <div class="log" id="log" aria-live="polite"><div>Simulation started.</div></div>
         <h3>Controls</h3>
@@ -185,28 +187,28 @@ footer { font-size: 14px; color: var(--muted); }
           <span class="hint">How close two edges must be before gravity acts between them. Far right means no limit (normal gravity).</span>
         </div>
         <div class="ctrl">
-          <label for="nUni">Universes on the sheet <output id="nUniOut">36</output></label>
+          <label for="nUni">Universes at start <output id="nUniOut">36</output></label>
           <input type="range" id="nUni" min="6" max="80" step="1" value="36">
+          <span class="hint">Applies when you press Reset.</span>
         </div>
         <div class="ctrl">
-          <label for="thr">Big-bang threshold <output id="thrOut">6× ours</output></label>
-          <input type="range" id="thr" min="2" max="20" step="1" value="6">
-          <span class="hint">Merged mass needed before a well ignites.</span>
+          <label for="thr">Overlap for a big bang <output id="thrOut">40%</output></label>
+          <input type="range" id="thr" min="10" max="90" step="5" value="40">
+          <span class="hint">How far two universes must grow into each other before their colliding matter ignites.</span>
         </div>
         <div class="ctrl">
-          <label for="hub">Sheet expansion <output id="hubOut">0.15</output></label>
-          <input type="range" id="hub" min="0" max="0.8" step="0.01" value="0.15">
-          <span class="hint">Stretching of the sheet. It slows marbles down and keeps the sea from collapsing into one lump.</span>
+          <label for="hub">Expansion rate <output id="hubOut">0.020</output></label>
+          <input type="range" id="hub" min="0" max="0.1" step="0.002" value="0.02">
+          <span class="hint">How fast every universe spreads out. As it spreads, the pull at its centre weakens.</span>
         </div>
         <div class="ctrl">
           <label for="spd">Speed <output id="spdOut">1.0×</output></label>
           <input type="range" id="spd" min="0.2" max="3" step="0.1" value="1">
         </div>
-        <label class="check"><input type="checkbox" id="feed" checked> Keep adding new marbles</label>
         <label class="check"><input type="checkbox" id="trails" checked> Show trails</label>
         <div class="row">
           <button id="pause">Pause</button>
-          <button id="drop">Drop a marble</button>
+          <button id="drop">Add a universe</button>
           <button id="reset">Reset</button>
         </div>
       </div>
@@ -320,7 +322,7 @@ footer { font-size: 14px; color: var(--muted); }
         <h3>Neighbours beside us on the sheet</h3>
         <p><strong>Too weak.</strong> Even with a neighbour's edge touching ours and a galaxy close to our edge, the extra pull is hundreds of thousands of times too small. A universe's mass is spread across billions of light-years, so very little of it is close to any one galaxy.</p>
         <p><strong>Wrong shape.</strong> Mass outside a galaxy pulls one side and pushes the other. By Gauss's law, the average over a sphere is zero. Dark matter's effect is a net inward pull, and that needs mass inside the orbit.</p>
-        <p><strong>Gravity is limited by light speed too.</strong> Changes in gravity travel at the speed of light (LIGO confirmed this in 2017). So if a neighbour's light can never reach us, its gravity can't either. Matter beyond our horizon almost certainly exists, but it can't be what holds our galaxies together.</p>
+        <p><strong>The speed of gravity isn't the problem.</strong> Changes in a well travel at the speed of light. In 2017, gravitational waves and light from the same neutron-star collision arrived 1.7 seconds apart after 130 million years. But a well that was already in place before our universe formed would already reach us. So in this model, the horizon doesn't block the neighbours' pull. What rules them out is how weak and lopsided that pull is.</p>
         <p><strong>A reach limit makes it worse.</strong> With a gravity cutoff, the average pull turns outward, as if the neighbour had negative mass.</p>
       </article>
       <article class="finding">
@@ -332,13 +334,13 @@ footer { font-size: 14px; color: var(--muted); }
       <article class="finding">
         <span class="pill good">Testable prediction</span>
         <h3>Uneven pull on our edges</h3>
-        <p>Neighbours close to some sides of our universe would stretch it more along one axis. That predicts expansion running slightly faster in some directions, and a matching distortion in the largest patterns of the cosmic microwave background (CMB).</p>
+        <p>Neighbours close to some sides of our universe would stretch it more along one axis. On the sheet this gets stronger over time: as our universe expands and its centre weakens, we end up sitting inside our neighbours' wells, and they sit inside ours. That predicts expansion running slightly faster in some directions, and a matching distortion in the largest patterns of the cosmic microwave background (CMB).</p>
         <p>There are disputed hints of this: the CMB "axis of evil", a claimed "dark flow" of galaxy clusters, and direction-dependent Hubble measurements. Your model predicts they all point the same way, which can be checked.</p>
       </article>
       <article class="finding">
         <span class="pill warn">Plausible, not tested here</span>
         <h3>Collisions making big bangs</h3>
-        <p>On the sheet, attraction does what you predicted. Marbles gather into filaments and dense wells that look like a neural network or a choppy sea. Our own universe has a similar web of galaxies, built by gravity.</p>
+        <p>On the sheet, expanding universes keep running into each other, and each collision seeds a compact newborn that expands in turn. The sheet becomes a shifting pattern of strong young wells and weak old ones, which looks like a neural network or a choppy sea.</p>
         <p>A collision between bubble universes would leave a round, disc-shaped mark on the CMB. Searches of WMAP data (Feeney et al., 2011) found no convincing signal yet.</p>
       </article>
     </div>
@@ -362,9 +364,24 @@ const fmtA = (a) => (a === 0 ? "0" : fmtSci(a) + " m/s²");
 const bindOut = (id, fmt, cb) => { const el = $(id), out = $(id + "Out"); const f = () => { out.textContent = fmt(+el.value); cb && cb(); }; el.addEventListener("input", f); out.textContent = fmt(+el.value); };
 
 /* ================= Simulation 1: the sheet ================= */
-const L = 240, HALF = L / 2, G = 420, EPS = 4, SOFT = 7, DEPTH = 9, NGRID = 110, TRAIL = 40;
-const sim = { bodies: [], bangs: 0, running: !reduceMotion, feedTimer: 0, rings: [], flat: true };
-const radiusOf = (m) => 6.5 * Math.cbrt(m);
+// Each universe is a cloud of internal weights, heavier near its centre and lighter toward its edge, not one point.
+// Every universe expands: its weights spread out over time, so the pull at its centre keeps getting weaker.
+// Nothing collapses or merges. When two expanding universes overlap far enough, their colliding matter forms a
+// dense new universe at the contact point (a big bang), which then expands in turn.
+// Total mass is conserved: nothing is created except by the "Add a universe" button.
+const L = 240, HALF = L / 2, G = 420, DEPTH = 9, NGRID = 80, TRAIL = 40, R0 = 7.5, SPIN = 0.25;
+const LAYOUT = (() => { // [x, y, share of mass] on a unit disc; shares add up to 1
+  const out = [[0, 0, 0.28]];
+  for (let k = 0; k < 4; k++) { const a = (k / 4) * 2 * Math.PI; out.push([0.3 * Math.cos(a), 0.3 * Math.sin(a), 0.07]); }
+  for (let k = 0; k < 8; k++) { const a = (k / 8) * 2 * Math.PI + Math.PI / 8; out.push([0.66 * Math.cos(a), 0.66 * Math.sin(a), 0.055]); }
+  return out;
+})();
+const NW = LAYOUT.length;
+const sim = { bodies: [], bangs: 0, running: !reduceMotion, rings: [], flat: true, t: 0 };
+const radiusOf = (m, scale = 1) => R0 * Math.sqrt(m) * scale;
+const DRAG = 0.15, THIN = 0.005; // THIN: mass per area below which a universe has spread too thin to hold together
+let nextId = 1;
+const blobOf = (b) => 0.3 * b.r; // each weight is a soft blob, so overlapping universes never form a point singularity
 const wrap = (v) => ((v + HALF) % L + L) % L - HALF;
 const mi = (d) => d - L * Math.round(d / L); // minimum-image separation
 const reachVal = () => (+$("reach").value >= 100 ? Infinity : +$("reach").value);
@@ -372,33 +389,57 @@ function reachWeight(gap, reach) {
   if (reach === Infinity || gap <= reach) return 1;
   return Math.max(0, 1 - (gap - reach) / (0.25 * reach + 6));
 }
+function weightsOf(b) { // world offsets of a body's internal weights (they turn slowly with the universe)
+  const c = Math.cos(b.phase), s = Math.sin(b.phase);
+  return LAYOUT.map(([x, y, w]) => [b.r * (x * c - y * s), b.r * (x * s + y * c), w * b.m]);
+}
 function addBody(o) {
   const m = o.m ?? (0.35 + Math.random() * 2.2);
-  const b = { x: o.x, y: o.y, vx: o.vx ?? (Math.random() - 0.5) * 6, vy: o.vy ?? (Math.random() - 0.5) * 6, m, r: radiusOf(m), ours: !!o.ours, born: 0, mesh: null, edge: null, trail: [], trailLine: null };
+  const scale = o.scale ?? 1;
+  const b = { id: nextId++, x: o.x, y: o.y, vx: o.vx ?? (Math.random() - 0.5) * 6, vy: o.vy ?? (Math.random() - 0.5) * 6, m, scale, r: radiusOf(m, scale), age: 0, lastBang: -99, phase: Math.random() * 6.28, ours: !!o.ours, born: 0, mesh: null, edge: null, trail: [], trailLine: null };
   sim.bodies.push(b);
   return b;
 }
-function randomFreeSpot() {
-  for (let k = 0; k < 40; k++) {
+function randomFreeSpot(m) {
+  const r = radiusOf(m ?? 1.5);
+  for (let k = 0; k < 60; k++) {
     const x = (Math.random() - 0.5) * L, y = (Math.random() - 0.5) * L;
-    if (sim.bodies.every((b) => Math.hypot(mi(b.x - x), mi(b.y - y)) > b.r + 14)) return { x, y };
+    if (sim.bodies.every((b) => Math.hypot(mi(b.x - x), mi(b.y - y)) > b.r + r + 4)) return { x, y, m };
   }
-  return { x: (Math.random() - 0.5) * L, y: (Math.random() - 0.5) * L };
+  return { x: (Math.random() - 0.5) * L, y: (Math.random() - 0.5) * L, m };
 }
 function logEvent(msg) {
   const el = $("log"), d = document.createElement("div");
   d.textContent = msg; el.prepend(d);
   while (el.children.length > 4) el.lastChild.remove();
 }
+// pull of body b's weights on a point at (x, y), with an extra softening sp for the receiving weight
+function pullFrom(b, W, x, y, sp) {
+  let ax = 0, ay = 0;
+  const s2 = blobOf(b) ** 2 + sp * sp;
+  for (const [ox, oy, wm] of W) {
+    const dx = mi(b.x + ox - x), dy = mi(b.y + oy - y), r2 = dx * dx + dy * dy + s2, inv = G * wm / (r2 * Math.sqrt(r2));
+    ax += dx * inv; ay += dy * inv;
+  }
+  return [ax, ay];
+}
 function step(dt) {
-  const B = sim.bodies, n = B.length, H = +$("hub").value, reach = reachVal();
+  const B = sim.bodies, n = B.length, H = DRAG, reach = reachVal(), E = +$("hub").value;
+  sim.t += dt;
+  for (const b of B) { b.phase += SPIN * dt; b.age += dt; b.scale += E * dt; b.r = radiusOf(b.m, b.scale); }
+  const Ws = B.map(weightsOf);
   const ax = new Float64Array(n), ay = new Float64Array(n);
   for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
     const dx = mi(B[j].x - B[i].x), dy = mi(B[j].y - B[i].y), d = Math.hypot(dx, dy);
     const w = reachWeight(d - B[i].r - B[j].r, reach); if (!w) continue;
-    const r2 = d * d + EPS * EPS, inv = w * G / (r2 * Math.sqrt(r2));
-    ax[i] += dx * inv * B[j].m; ay[i] += dy * inv * B[j].m;
-    ax[j] -= dx * inv * B[i].m; ay[j] -= dy * inv * B[i].m;
+    let fx = 0, fy = 0; // total force of j on i, summed weight by weight
+    if (d > 3 * (B[i].r + B[j].r)) { // far apart: the clouds act like points
+      const r2 = d * d, inv = G * B[i].m * B[j].m / (r2 * Math.sqrt(r2)); fx = dx * inv; fy = dy * inv;
+    } else {
+      for (const [ox, oy, wm] of Ws[i]) { const [px, py] = pullFrom(B[j], Ws[j], B[i].x + ox, B[i].y + oy, blobOf(B[i])); fx += px * wm; fy += py * wm; }
+    }
+    ax[i] += w * fx / B[i].m; ay[i] += w * fy / B[i].m;
+    ax[j] -= w * fx / B[j].m; ay[j] -= w * fy / B[j].m;
   }
   for (let i = 0; i < n; i++) {
     const b = B[i];
@@ -407,33 +448,35 @@ function step(dt) {
     b.x = wrap(b.x + b.vx * dt); b.y = wrap(b.y + b.vy * dt);
     if (b.born > 0) b.born = Math.max(0, b.born - dt);
   }
-  const thr = +$("thr").value, ejecta = [];
+  // Collisions: expanding universes that overlap far enough make a big bang where their matter meets.
+  const trig = +$("thr").value / 100, born = [];
   for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) {
     const a = B[i], c = B[j];
-    if (Math.hypot(mi(c.x - a.x), mi(c.y - a.y)) < (a.r + c.r) * 0.62) {
-      const m = a.m + c.m, big = a.m >= c.m ? a : c, small = big === a ? c : a;
-      big.x = wrap(big.x + mi(small.x - big.x) * small.m / m); big.y = wrap(big.y + mi(small.y - big.y) * small.m / m);
-      big.vx = (a.vx * a.m + c.vx * c.m) / m; big.vy = (a.vy * a.m + c.vy * c.m) / m;
-      const wasOurs = a.ours || c.ours;
-      big.m = m; big.ours = wasOurs;
-      if (wasOurs) logEvent("Our universe merged with a neighbour.");
-      if (m >= thr) {
-        // Big bang: the well ignites and throws part of its matter back onto the sheet
-        sim.bangs++; big.born = 2.5; spawnRing(big);
-        const kick = 3 + Math.floor(Math.random() * 3), share = 0.4 * m / kick;
-        big.m = 0.6 * m;
-        for (let k = 0; k < kick; k++) {
-          const ang = (k / kick) * 2 * Math.PI + Math.random() * 0.6, dist = radiusOf(big.m) + radiusOf(share) + 4;
-          ejecta.push({ x: wrap(big.x + Math.cos(ang) * dist), y: wrap(big.y + Math.sin(ang) * dist), vx: big.vx + Math.cos(ang) * 45, vy: big.vy + Math.sin(ang) * 45, m: share });
-        }
-        logEvent(`Big bang #${sim.bangs}: a ${m.toFixed(1)}× well ignited and threw out ${kick} new universes.`);
-      }
-      big.r = radiusOf(big.m);
-      removeBody(small); B.splice(B.indexOf(small), 1);
-      j = i;
-    }
+    if (sim.t - a.lastBang < 3 || sim.t - c.lastBang < 3 || a.age < 3 || c.age < 3) continue;
+    const key = a.id < c.id ? a.id + "-" + c.id : c.id + "-" + a.id;
+    if (sim.collided.has(key)) continue; // each pair of universes collides once
+    const dx = mi(c.x - a.x), dy = mi(c.y - a.y), d = Math.hypot(dx, dy), depth = a.r + c.r - d;
+    if (depth < trig * Math.min(a.r, c.r) || B.length + born.length >= 80) continue;
+    sim.collided.add(key);
+    const ux = dx / (d || 1), uy = dy / (d || 1), along = a.r - depth / 2; // middle of the overlap zone
+    const takeA = 0.15 * a.m, takeB = 0.15 * c.m, m = takeA + takeB;
+    if (m < 0.2) continue; // too little matter meets to ignite
+    a.m -= takeA; c.m -= takeB; a.lastBang = c.lastBang = sim.t;
+    born.push({ x: wrap(a.x + ux * along), y: wrap(a.y + uy * along), vx: (a.vx + c.vx) / 2, vy: (a.vy + c.vy) / 2, m, scale: 0.3 });
+    sim.bangs++;
+    logEvent(`Big bang #${sim.bangs}: two universes collided and formed a new one (${m.toFixed(2)} mass).`);
+    if (a.ours || c.ours) logEvent("Our universe was part of that collision.");
   }
-  for (const e of ejecta) { const nb = addBody(e); nb.born = 1.2; }
+  for (const e of born) { const nb = addBody(e); nb.born = 2.5; nb.lastBang = sim.t; spawnRing(nb); }
+  // A universe spread too thin dissolves into its nearest neighbour (its mass is handed over, not lost).
+  for (let i = B.length - 1; i >= 0; i--) {
+    const f = B[i]; if (f.ours || B.length < 3 || (f.m > 0.06 && f.m / (f.r * f.r) > THIN)) continue;
+    let near = null, bd = Infinity;
+    for (const o of B) { if (o === f) continue; const d = Math.hypot(mi(o.x - f.x), mi(o.y - f.y)); if (d < bd) { bd = d; near = o; } }
+    near.m += f.m; removeBody(f); B.splice(i, 1);
+    if (Math.random() < 0.25) logEvent("An old universe spread too thin and dissolved into its neighbour.");
+  }
+  for (const b of B) b.r = radiusOf(b.m, b.scale);
 }
 function tideOnOurs() {
   const o = sim.bodies.find((b) => b.ours);
@@ -442,11 +485,13 @@ function tideOnOurs() {
   let txx = 0, txy = 0, tyy = 0, near = 0;
   for (const b of sim.bodies) {
     if (b === o) continue;
-    const dx = mi(b.x - o.x), dy = mi(b.y - o.y), dd = Math.hypot(dx, dy);
-    const w = reachWeight(dd - b.r - o.r, reach); if (!w) continue;
+    const w = reachWeight(Math.hypot(mi(b.x - o.x), mi(b.y - o.y)) - b.r - o.r, reach); if (!w) continue;
     near++;
-    const d = dd + EPS, nx = dx / d, ny = dy / d, k = w * G * b.m / (d * d * d);
-    txx += k * (3 * nx * nx - 1); txy += k * 3 * nx * ny; tyy += k * (3 * ny * ny - 1);
+    const s2 = blobOf(b) ** 2;
+    for (const [ox, oy, wm] of weightsOf(b)) { // every internal weight pulls separately: closer weights count for more
+      const dx = mi(b.x + ox - o.x), dy = mi(b.y + oy - o.y), d = Math.sqrt(dx * dx + dy * dy + s2), nx = dx / d, ny = dy / d, k = w * G * wm / (d * d * d);
+      txx += k * (3 * nx * nx - 1); txy += k * 3 * nx * ny; tyy += k * (3 * ny * ny - 1);
+    }
   }
   const self = G * o.m / (o.r * o.r * o.r);
   return { o, near, txx: txx / self, txy: txy / self, tyy: tyy / self };
@@ -454,7 +499,8 @@ function tideOnOurs() {
 
 /* --- three.js scene --- */
 const vp = $("vp");
-let renderer, scene, camera, sheet, sheetWire, heights, ourRing, ringPos, shadedMat, flatMat;
+let renderer, scene, camera, sheet, sheetWire, heights, ourRing, ringPos, shadedMat, flatMat, dots;
+const MAXDOTS = 200 * 13;
 const cam = { theta: 0, phi: 0.02, dist: 290 };
 const tmpColor = new THREE.Color();
 const COL_OTHER = new THREE.Color("#E8963F"), COL_OURS = new THREE.Color("#3CC4C1"), COL_NEW = new THREE.Color("#FFE7A8");
@@ -484,12 +530,22 @@ function initScene() {
   ringGeo.setAttribute("position", new THREE.BufferAttribute(ringPos, 3));
   ourRing = new THREE.Line(ringGeo, new THREE.LineBasicMaterial({ color: 0x5ff0ea }));
   scene.add(ourRing);
+  const dg = new THREE.BufferGeometry();
+  dg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(MAXDOTS * 3), 3));
+  dg.setAttribute("color", new THREE.BufferAttribute(new Float32Array(MAXDOTS * 3), 3));
+  dots = new THREE.Points(dg, new THREE.PointsMaterial({ size: 2.6, vertexColors: true, transparent: true, opacity: 0.9, sizeAttenuation: true }));
+  scene.add(dots);
   resize();
 }
+let frameWeights = [];
 function potentialAt(x, y) {
   let p = 0;
-  for (const b of sim.bodies) { const dx = mi(b.x - x), dy = mi(b.y - y); p -= b.m / Math.sqrt(dx * dx + dy * dy + SOFT * SOFT); }
-  return p * SOFT * DEPTH;
+  sim.bodies.forEach((b, i) => {
+    const dx = mi(b.x - x), dy = mi(b.y - y), d2 = dx * dx + dy * dy, s2 = blobOf(b) ** 2;
+    if (d2 > 9 * b.r * b.r) { p -= b.m / Math.sqrt(d2 + s2); return; }
+    for (const [ox, oy, wm] of frameWeights[i]) { const ex = mi(b.x + ox - x), ey = mi(b.y + oy - y); p -= wm / Math.sqrt(ex * ex + ey * ey + s2); }
+  });
+  return p * 7 * DEPTH;
 }
 let zOffset = 0;
 const surfaceY = (x, y) => (sim.flat ? 0 : potentialAt(x, y) + zOffset);
@@ -506,7 +562,7 @@ function updateSheet() {
     col.setXYZ(i, tmpColor.r, tmpColor.g, tmpColor.b);
   }
   pos.needsUpdate = true; col.needsUpdate = true;
-  sheet.geometry.computeVertexNormals();
+  if (!sim.flat) sheet.geometry.computeVertexNormals();
   sheet.material = sim.flat ? flatMat : shadedMat;
   sheetWire.material.opacity = sim.flat ? 0.08 : 0.14;
 }
@@ -536,7 +592,7 @@ function updateMeshes(dt) {
   for (const b of sim.bodies) {
     const m = meshFor(b);
     const inflate = b.born > 0 ? 1 + 0.5 * Math.sin(Math.PI * Math.min(1, b.born / 2.5)) : 1;
-    const r = b.r * 0.5 * inflate, y = surfaceY(b.x, b.y);
+    const r = b.r * 0.26 * inflate, y = surfaceY(b.x, b.y);
     m.scale.setScalar(r);
     m.position.set(b.x, y + r * 0.6, -b.y);
     b.edge.scale.setScalar(b.r); b.edge.position.set(b.x, y + 0.6, -b.y);
@@ -564,6 +620,20 @@ function updateMeshes(dt) {
     if (R.t > 1.4) { scene.remove(R.mesh); R.mesh.geometry.dispose(); R.mesh.material.dispose(); sim.rings.splice(k, 1); }
   }
 }
+function updateWeightDots() {
+  const pos = dots.geometry.attributes.position.array, col = dots.geometry.attributes.color.array; let n = 0;
+  sim.bodies.forEach((b, i) => {
+    const c = b.ours ? COL_OURS : COL_OTHER;
+    for (const [ox, oy, wm] of frameWeights[i]) {
+      if (n >= MAXDOTS) return;
+      const x = b.x + ox, y = b.y + oy, bright = 0.55 + 0.45 * Math.min(1, wm / (0.28 * b.m) * 1.6);
+      pos[n * 3] = x; pos[n * 3 + 1] = surfaceY(x, y) + 1.2; pos[n * 3 + 2] = -y;
+      col[n * 3] = c.r * bright; col[n * 3 + 1] = c.g * bright; col[n * 3 + 2] = c.b * bright; n++;
+    }
+  });
+  dots.geometry.setDrawRange(0, n);
+  dots.geometry.attributes.position.needsUpdate = true; dots.geometry.attributes.color.needsUpdate = true;
+}
 function updateTide() {
   const t = tideOnOurs();
   if (!t) { ourRing.visible = false; $("ourTag").hidden = true; $("sTide").textContent = "–"; $("sNear").textContent = "–"; return; }
@@ -578,7 +648,8 @@ function updateTide() {
   }
   ourRing.geometry.attributes.position.needsUpdate = true;
   const det = Math.sqrt(((txx - tyy) / 2) ** 2 + txy * txy);
-  $("sTide").textContent = (2 * det * 100).toFixed(det < 0.005 ? 2 : 1) + "%";
+  const ratio = 2 * det; // strongest minus weakest tidal pull on our edge, in units of our own gravity there
+  $("sTide").textContent = ratio >= 10 ? Math.round(ratio) + "×" : ratio.toFixed(2) + "×";
   $("sNear").textContent = t.near;
   const v = new THREE.Vector3(o.x, baseY + o.r * 1.2, -o.y).project(camera), tag = $("ourTag");
   tag.hidden = v.z > 1;
@@ -596,32 +667,36 @@ function reset() {
   for (const b of sim.bodies) removeBody(b);
   for (const R of sim.rings) scene.remove(R.mesh);
   sim.bodies = []; sim.rings = []; sim.bangs = 0;
-  addBody({ x: 0, y: 0, m: 1, vx: 0, vy: 0, ours: true });
-  for (let k = 1; k < +$("nUni").value; k++) addBody(randomFreeSpot());
+  const ours = addBody({ x: 0, y: 0, m: 1, vx: 0, vy: 0, ours: true });
+  sim.core0 = ours.m / (ours.r * ours.r); sim.t = 0; sim.collided = new Set();
+  for (let k = 1; k < +$("nUni").value; k++) addBody(randomFreeSpot(0.35 + Math.random() * 2.2));
   $("log").innerHTML = "<div>Sheet reset.</div>";
 }
-let last = performance.now();
+let last = performance.now(), sheetTick = 0;
 function frame(now) {
   const dtReal = Math.min(0.05, (now - last) / 1000); last = now;
   if (sim.running) {
     const dt = dtReal * +$("spd").value;
     for (let s = 0; s < 3; s++) step(dt / 3);
-    if ($("feed").checked) { sim.feedTimer += dt; if (sim.feedTimer > 1.2 && sim.bodies.length < +$("nUni").value) { sim.feedTimer = 0; addBody(randomFreeSpot()); } }
   }
-  updateSheet(); updateMeshes(sim.running ? dtReal : 0); updateTide();
+  frameWeights = sim.bodies.map(weightsOf);
+  if (++sheetTick % 2 === 0 || !sim.running) updateSheet(); // the sheet is the costly part; every other frame is smooth enough
+  updateMeshes(sim.running ? dtReal : 0); updateTide(); updateWeightDots();
   $("sCount").textContent = sim.bodies.length; $("sBangs").textContent = sim.bangs;
+  $("sMass").textContent = sim.bodies.reduce((t, b) => t + b.m, 0).toFixed(1);
+  { const o = sim.bodies.find((b) => b.ours); $("sCore").textContent = o ? (100 * (o.m / (o.r * o.r)) / sim.core0).toFixed(o.m / (o.r * o.r) / sim.core0 < 0.1 ? 1 : 0) + "%" : "–"; }
   placeCamera(); renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
 function wireSheetUI() {
   bindOut("reach", (v) => (v >= 100 ? "unlimited" : v + " units"));
   bindOut("nUni", (v) => v);
-  bindOut("thr", (v) => v + "× ours");
-  bindOut("hub", (v) => v.toFixed(2));
+  bindOut("thr", (v) => v + "%");
+  bindOut("hub", (v) => v.toFixed(3));
   bindOut("spd", (v) => v.toFixed(1) + "×");
   $("pause").textContent = sim.running ? "Pause" : "Play";
   $("pause").onclick = () => { sim.running = !sim.running; $("pause").textContent = sim.running ? "Pause" : "Play"; };
-  $("drop").onclick = () => { addBody(randomFreeSpot()); logEvent("A new marble was dropped on the sheet."); };
+  $("drop").onclick = () => { addBody(randomFreeSpot(1)); logEvent("You added a new universe (+1.0 mass)."); };
   $("reset").onclick = reset;
   $("viewBtn").onclick = () => {
     sim.flat = !sim.flat;
