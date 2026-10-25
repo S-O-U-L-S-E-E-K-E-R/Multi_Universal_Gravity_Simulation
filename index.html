@@ -217,6 +217,42 @@ footer { font-size: 14px; color: var(--muted); }
 
   <section class="stack">
     <div class="stack prose">
+      <span class="eyebrow">Well profile · one universe expanding</span>
+      <h2>Wider, shallower, same far reach</h2>
+      <p>This is a side view of one universe's well as it expands. The mass stays the same and only spreads out. Watch three things: how deep the well is at the centre, how strong the pull is at its strongest, and the pull at a fixed point far away (the <span class="other">orange marker</span>).</p>
+    </div>
+    <div class="test">
+      <div class="chart-wrap">
+        <canvas class="chart" id="wellChart" role="img" aria-label="Side view of a universe's gravity well and its pull strength, at the start and now"></canvas>
+        <div class="keys">
+          <span class="k-vis">at the start</span>
+          <span class="k-obs">now</span>
+          <span class="k-ext">fixed far point</span>
+        </div>
+      </div>
+      <div class="side">
+        <h3>Expansion</h3>
+        <div class="ctrl">
+          <label for="wExp">Size vs. start <output id="wExpOut">1.0×</output></label>
+          <input type="range" id="wExp" min="1" max="10" step="0.05" value="1">
+          <span class="hint">The universe's radius compared with where it started. Its mass never changes.</span>
+        </div>
+        <div class="row">
+          <button id="wPlay">Play expansion</button>
+          <button id="wReset">Back to start</button>
+        </div>
+        <div class="readout">
+          <div class="line"><span>Depth at the centre</span><span id="wDepth">–</span></div>
+          <div class="line"><span>Strongest pull</span><span id="wPeak">–</span></div>
+          <div class="line"><span>Pull at the far point</span><span id="wFar">–</span></div>
+        </div>
+        <div class="verdict good" id="wVerdict">–</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="stack prose">
       <span class="eyebrow">Test 1 · the dark-matter claim, edges close together</span>
       <h2>Can neighbours touching our edge hold a galaxy together?</h2>
       <p>This is the strongest evidence for dark matter. Stars at the edge of a galaxy orbit far too fast for the visible mass to hold them. The measured speed stays flat at about 200 km/s instead of dropping off. If neighbour universes are the cause, their pull has to supply the missing inward force.</p>
@@ -261,6 +297,42 @@ footer { font-size: 14px; color: var(--muted); }
           <div class="line"><span>Average over a sphere</span><span id="rFlux">–</span></div>
         </div>
         <div class="verdict" id="verdict">–</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="stack prose">
+      <span class="eyebrow">Test 1b · an expanded neighbour overlapping us</span>
+      <h2>What if a neighbour has expanded right through our galaxy?</h2>
+      <p>Once an expanded neighbour overlaps our space, some of its matter sits <em>inside</em> each galaxy's orbits, and that matter does pull inward. Test 1 couldn't capture this. The catch is that an expanded universe is spread very thin. This test fills the galaxy with the neighbour's matter at a density you choose, measured against the average density of our own universe (about 4 × 10⁻²⁸ kg per cubic metre, roughly one hydrogen atom in every 4 cubic metres).</p>
+    </div>
+    <div class="test">
+      <div class="chart-wrap">
+        <canvas class="chart" id="chart3" role="img" aria-label="Rotation speed versus radius with an overlapping neighbour's matter filling the galaxy"></canvas>
+        <div class="keys">
+          <span class="k-obs">measured shape (typical spiral)</span>
+          <span class="k-vis">visible matter only</span>
+          <span class="k-ext">visible + overlapping neighbour</span>
+        </div>
+      </div>
+      <div class="side">
+        <h3>Overlapping neighbour</h3>
+        <div class="ctrl">
+          <label for="oDen">Density vs. our universe <output id="oDenOut">1×</output></label>
+          <input type="range" id="oDen" min="0" max="7" step="0.05" value="0">
+          <span class="hint">1× means the neighbour is as dense as our universe on average. Expansion only makes it thinner.</span>
+        </div>
+        <div class="row">
+          <button id="oFit">Find best fit</button>
+          <button id="oReset">Same as ours (1×)</button>
+        </div>
+        <div class="readout">
+          <div class="line"><span>Neighbour density</span><span id="oRho">–</span></div>
+          <div class="line"><span>Needed to match at 30 kpc</span><span id="oNeed">–</span></div>
+          <div class="line"><span>Mismatch vs measured curve</span><span id="oRms">–</span></div>
+        </div>
+        <div class="verdict" id="oVerdict">–</div>
       </div>
     </div>
   </section>
@@ -324,6 +396,7 @@ footer { font-size: 14px; color: var(--muted); }
         <p><strong>Wrong shape.</strong> Mass outside a galaxy pulls one side and pushes the other. By Gauss's law, the average over a sphere is zero. Dark matter's effect is a net inward pull, and that needs mass inside the orbit.</p>
         <p><strong>The speed of gravity isn't the problem.</strong> Changes in a well travel at the speed of light. In 2017, gravitational waves and light from the same neutron-star collision arrived 1.7 seconds apart after 130 million years. But a well that was already in place before our universe formed would already reach us. So in this model, the horizon doesn't block the neighbours' pull. What rules them out is how weak and lopsided that pull is.</p>
         <p><strong>A reach limit makes it worse.</strong> With a gravity cutoff, the average pull turns outward, as if the neighbour had negative mass.</p>
+        <p><strong>Overlapping doesn't save it.</strong> A neighbour expanded through our galaxy would need to be about 200,000 times denser than our universe. Even then the curve keeps climbing instead of staying flat, because evenly spread matter adds more pull the farther out you go. A flat curve needs matter that thins out with distance from each galaxy's centre.</p>
       </article>
       <article class="finding">
         <span class="pill good">Can match the data</span>
@@ -921,10 +994,113 @@ $("fitBtn").onclick = () => {
 };
 $("copyBtn").onclick = () => setT2(1, 3);
 
+/* ================= Well profile: one universe expanding ================= */
+// Mass is heavier near the centre (Plummer profile, scale = half the radius). Units: start radii; values shown vs. the start.
+const W_FAR = 9, W_XMAX = 12;
+const wPot = (r, R) => -1 / Math.sqrt(r * r + (R / 2) ** 2);
+const wPull = (r, R) => r / (r * r + (R / 2) ** 2) ** 1.5;
+const wPeak = (R) => wPull((R / 2) / Math.SQRT2, R);
+function drawWell() {
+  const R = +$("wExp").value, cv = $("wellChart");
+  $("wExpOut").textContent = R.toFixed(1) + "×";
+  const dpr = Math.min(window.devicePixelRatio || 1, 2), W = cv.clientWidth, H = cv.clientHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const fg = css("--fg"), muted = css("--muted"), line = css("--line"), other = css("--other");
+  const pad = { l: 16, r: 16, t: 22, b: 30 }, split = pad.t + (H - pad.t - pad.b) * 0.55;
+  const X = (r) => pad.l + ((r + W_XMAX) / (2 * W_XMAX)) * (W - pad.l - pad.r);
+  const depth0 = -wPot(0, 1), peak0 = wPeak(1);
+  const Yw = (p) => pad.t + 4 + (-p / depth0) * (split - pad.t - 22);          // well: 0 at top, start depth at bottom
+  const Yp = (a) => H - pad.b - (a / peak0) * (H - pad.b - split - 22);        // pull: 0 at bottom, start peak at top
+  g.font = `12px ${css("--f-mono")}`; g.fillStyle = muted; g.textBaseline = "top"; g.textAlign = "left";
+  g.fillText("well depth (side view of the sheet)", pad.l, 2);
+  g.fillText("pull strength", pad.l, split + 2);
+  g.strokeStyle = line; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(X(-W_XMAX), split - 6); g.lineTo(X(W_XMAX), split - 6); g.stroke();
+  g.beginPath(); g.moveTo(X(-W_XMAX), Yp(0)); g.lineTo(X(W_XMAX), Yp(0)); g.stroke();
+  const curve = (fn, color, width, dash) => {
+    g.strokeStyle = color; g.lineWidth = width; g.setLineDash(dash || []); g.beginPath();
+    for (let k = 0; k <= 240; k++) { const r = -W_XMAX + (k / 240) * 2 * W_XMAX, [x, y] = fn(r); k ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke(); g.setLineDash([]);
+  };
+  curve((r) => [X(r), Yw(wPot(r, 1) - wPot(W_XMAX, 1))], muted, 2, [6, 5]);
+  curve((r) => [X(r), Yw(wPot(r, R) - wPot(W_XMAX, R))], fg, 2.5);
+  curve((r) => [X(r), Yp(wPull(Math.abs(r), 1))], muted, 2, [6, 5]);
+  curve((r) => [X(r), Yp(wPull(Math.abs(r), R))], fg, 2.5);
+  // universe edge and the fixed far point
+  g.strokeStyle = fg; g.globalAlpha = 0.35; g.setLineDash([2, 4]);
+  for (const s of [-R, R]) if (Math.abs(s) <= W_XMAX) { g.beginPath(); g.moveTo(X(s), pad.t + 14); g.lineTo(X(s), Yp(0)); g.stroke(); }
+  g.globalAlpha = 1; g.setLineDash([]);
+  const depth = -wPot(0, R) / depth0, peak = wPeak(R) / peak0, far = wPull(W_FAR, R) / wPull(W_FAR, 1);
+  if (R <= W_XMAX) { g.fillStyle = muted; g.textAlign = "center"; g.textBaseline = "top"; g.fillText("edge", X(R), 18); }
+  g.fillStyle = other; g.strokeStyle = other; g.lineWidth = 1.5;
+  g.beginPath(); g.moveTo(X(W_FAR), Yp(0) - 34); g.lineTo(X(W_FAR), Yp(0)); g.stroke();
+  g.beginPath(); g.arc(X(W_FAR), Yp(wPull(W_FAR, R)), 5, 0, 2 * Math.PI); g.fill();
+  g.textAlign = "right"; g.textBaseline = "bottom";
+  g.fillText(`pull here: ${(far * 100).toFixed(0)}%`, Math.min(W - pad.r, X(W_FAR) + 30), Yp(0) - 38);
+  g.textAlign = "center"; g.textBaseline = "top"; g.fillText("far point", X(W_FAR), Yp(0) + 6);
+  const pct = (v) => (v * 100).toFixed(v < 0.1 ? 1 : 0) + "% of start";
+  $("wDepth").textContent = pct(depth); $("wPeak").textContent = pct(peak); $("wFar").textContent = pct(far);
+  const v = $("wVerdict");
+  if (R < 1.05) { v.className = "verdict good"; v.textContent = "Press Play expansion or drag the slider to spread the universe out."; }
+  else if (R < W_FAR && far >= 0.95) {
+    v.className = "verdict good";
+    v.textContent = `At ${R.toFixed(1)}× its size, the centre is ${(depth * 100).toFixed(0)}% as deep and the strongest pull is down to ${(peak * 100).toFixed(peak < 0.1 ? 1 : 0)}%, but the far point still feels ${(far * 100).toFixed(0)}% of its pull. The well flattens out; its far reach stays.`;
+  } else if (R < W_FAR) {
+    v.className = "verdict warn";
+    v.textContent = `At ${R.toFixed(1)}× its size, the centre is ${(depth * 100).toFixed(0)}% as deep and the strongest pull is ${(peak * 100).toFixed(peak < 0.1 ? 1 : 0)}%. The far point now feels ${(far * 100).toFixed(0)}%, because the universe's outer matter has spread out almost to it. The pull only stays fixed while you're well outside the matter.`;
+  } else {
+    v.className = "verdict warn";
+    v.textContent = `The universe has now expanded past the far point, so that point is inside it and feels much less pull (${(far * 100).toFixed(0)}%). The pull stays unchanged only for points outside the universe.`;
+  }
+}
+bindOut("wExp", (v) => v.toFixed(1) + "×", drawWell);
+let wAnim = null;
+function wStop() { if (wAnim) cancelAnimationFrame(wAnim); wAnim = null; $("wPlay").textContent = "Play expansion"; }
+$("wPlay").onclick = () => {
+  if (wAnim) return wStop();
+  if (+$("wExp").value >= 9.95) $("wExp").value = 1;
+  $("wPlay").textContent = "Pause";
+  let lastT = performance.now();
+  const tick = (t) => {
+    const el = $("wExp"), next = Math.min(10, +el.value * Math.pow(1.35, (t - lastT) / 1000)); lastT = t;
+    el.value = next; drawWell();
+    if (next >= 10) return wStop();
+    wAnim = requestAnimationFrame(tick);
+  };
+  wAnim = requestAnimationFrame(tick);
+};
+$("wReset").onclick = () => { wStop(); $("wExp").value = 1; drawWell(); };
+
+/* ================= Test 1b: expanded neighbour overlapping our galaxy ================= */
+const RHO_U = SI.Muni / (4 / 3 * Math.PI * R_U ** 3); // average ordinary-matter density of our universe
+const vOverlap = (r, f) => Math.sqrt(r * aVisAt(r) + 4 / 3 * Math.PI * SI.G * f * RHO_U * r * r); // even density inside the orbit pulls inward
+function rmsOverlap(f) { let e = 0, n = 0; for (let rk = 2; rk <= 50; rk += 2) { const r = rk * SI.kpc; e += ((vOverlap(r, f) - vObs(r)) / 1e3) ** 2; n++; } return Math.sqrt(e / n); }
+const NEED_F30 = NEED30 / (4 / 3 * Math.PI * SI.G * RHO_U * R30);
+function drawOverlap() {
+  const lg = +$("oDen").value, f = 10 ** lg;
+  $("oDenOut").textContent = fmtSci(f) + "×";
+  const vals = RS.map((rk) => vOverlap(rk * SI.kpc, f) / 1e3);
+  drawCurves($("chart3"), [{ vals: OBS, color: css("--fg"), width: 2.5 }, { vals: VIS, color: css("--muted"), width: 2, dash: [6, 5] }, { vals, color: css("--other"), width: 2.5 }]);
+  const rms = rmsOverlap(f);
+  $("oRho").textContent = fmtSci(f * RHO_U) + " kg/m³";
+  $("oNeed").textContent = fmtSci(NEED_F30) + "× ours";
+  $("oRms").textContent = rms.toFixed(0) + " km/s";
+  const v = $("oVerdict"), v50 = vOverlap(50 * SI.kpc, f) / 1e3;
+  if (f < NEED_F30 / 100) { v.className = "verdict"; v.textContent = `Far too thin. The neighbour adds ${(f / NEED_F30 * 100).toPrecision(2)}% of the missing pull at 30 kpc. It would need to be about ${fmtSci(NEED_F30)} times denser than our universe, and expansion only thins it further.`; }
+  else if (v50 > 230) { v.className = "verdict"; v.textContent = `Wrong shape. At this density the speed keeps rising (${v50.toFixed(0)} km/s at 50 kpc) instead of staying flat near 200. Evenly spread matter adds more pull the farther out you go.`; }
+  else { v.className = "verdict warn"; v.textContent = `Closer, but still off by ${rms.toFixed(0)} km/s: too slow in the middle and too fast at the edge. The neighbour would also need to be ${fmtSci(f)} times denser than our universe.`; }
+}
+bindOut("oDen", (v) => fmtSci(10 ** v) + "×", drawOverlap);
+$("oFit").onclick = () => { let best = [Infinity, 0]; for (let lg = 0; lg <= 7; lg += 0.01) { const e = rmsOverlap(10 ** lg); if (e < best[0]) best = [e, lg]; } $("oDen").value = best[1]; drawOverlap(); };
+$("oReset").onclick = () => { $("oDen").value = 0; drawOverlap(); };
+
 /* redraw on resize / theme change */
-const redrawAll = () => { drawTest1(); drawTest2(); };
+const redrawAll = () => { drawTest1(); drawTest2(); drawWell(); drawOverlap(); };
 new ResizeObserver(() => drawTest1()).observe($("map"));
 new ResizeObserver(() => drawTest2()).observe($("chart2"));
+new ResizeObserver(() => drawWell()).observe($("wellChart"));
+new ResizeObserver(() => drawOverlap()).observe($("chart3"));
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
 new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 redrawAll();
