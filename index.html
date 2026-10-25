@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Marbles on the Sheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Literata:opsz,wght@7..72,400;7..72,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; the two simulations break out wider as dark "observatory" panels. */
+:root {
+  --bg: #F1F3F7;
+  --surface: #FFFFFF;
+  --fg: #141925;
+  --muted: #586276;
+  --line: #D5DAE3;
+  --ours: #0B8584;
+  --other: #C06A17;
+  --good: #2D7A4E;
+  --warn: #A86F12;
+  --bad: #B3353B;
+  --space: #070A11;
+  --space-fg: #DCE3EE;
+  --space-muted: #8592A8;
+  --space-line: #1E2738;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Literata", Georgia, "Times New Roman", serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1017; --surface: #141A24; --fg: #E5E9F0; --muted: #96A1B5; --line: #263042;
+    --ours: #3CC4C1; --other: #EE9F4C; --good: #5BBE85; --warn: #E0B04F; --bad: #EE6B6F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1017; --surface: #141A24; --fg: #E5E9F0; --muted: #96A1B5; --line: #263042;
+  --ours: #3CC4C1; --other: #EE9F4C; --good: #5BBE85; --warn: #E0B04F; --bad: #EE6B6F;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--f-body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 72px;
+}
+main { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+.prose { max-width: 66ch; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1.12; margin: 0; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); font-weight: 700; letter-spacing: -0.01em; }
+h3 { font-size: 1.1rem; font-weight: 700; }
+p { margin: 0; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.eyebrow {
+  font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted);
+}
+.lede { font-size: 1.15rem; color: var(--fg); }
+.muted { color: var(--muted); }
+.ours { color: var(--ours); font-weight: 600; }
+.other { color: var(--other); font-weight: 600; }
+code, .mono { font-family: var(--f-mono); font-size: 0.88em; }
+
+/* Observatory panel (always dark: it is a view of empty space) */
+.panel {
+  background: var(--space); color: var(--space-fg); border-radius: 14px; overflow: hidden;
+  display: grid; grid-template-columns: minmax(0, 1fr) 300px;
+}
+@media (max-width: 860px) { .panel { grid-template-columns: minmax(0, 1fr); } }
+.viewport { position: relative; min-height: 340px; height: clamp(340px, 58vw, 600px); touch-action: pan-y; cursor: grab; }
+.viewport:active { cursor: grabbing; }
+.viewport canvas { display: block; width: 100%; height: 100%; }
+.tag {
+  position: absolute; pointer-events: none; transform: translate(-50%, -100%);
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #9FF0EC; background: rgba(7, 10, 17, 0.7); padding: 2px 6px; border-radius: 4px; white-space: nowrap;
+}
+.vp-buttons { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 6px; }
+.vp-buttons button { width: 34px; height: 34px; padding: 0; font-size: 18px; }
+.legend {
+  position: absolute; left: 12px; top: 12px; display: flex; flex-direction: column; gap: 4px;
+  font-family: var(--f-mono); font-size: 11px; color: var(--space-muted); pointer-events: none;
+}
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+.side { border-left: 1px solid var(--space-line); padding: 18px; display: flex; flex-direction: column; gap: 18px; font-size: 14px; }
+@media (max-width: 860px) { .side { border-left: 0; border-top: 1px solid var(--space-line); } }
+.side h3 { font-size: 0.78rem; font-family: var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--space-muted); font-weight: 600; }
+.ctrl { display: flex; flex-direction: column; gap: 4px; }
+.ctrl label { display: flex; justify-content: space-between; gap: 8px; font-family: var(--f-mono); font-size: 12px; color: var(--space-fg); }
+.ctrl label output { color: var(--space-muted); font-variant-numeric: tabular-nums; }
+.ctrl .hint { font-size: 12px; color: var(--space-muted); line-height: 1.4; }
+input[type="range"] { width: 100%; accent-color: #3CC4C1; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+button {
+  font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.04em;
+  background: #182233; color: var(--space-fg); border: 1px solid #2B3A52; border-radius: 7px;
+  padding: 8px 12px; cursor: pointer;
+}
+button:hover { background: #213048; }
+button:focus-visible, input:focus-visible { outline: 2px solid #3CC4C1; outline-offset: 2px; }
+.check { display: flex; gap: 8px; align-items: center; font-family: var(--f-mono); font-size: 12px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+.stat { display: flex; flex-direction: column; }
+.stat b { font-family: var(--f-mono); font-size: 1.25rem; font-weight: 600; font-variant-numeric: tabular-nums; color: #fff; }
+.stat span { font-size: 11px; color: var(--space-muted); font-family: var(--f-mono); letter-spacing: 0.04em; }
+.log { font-family: var(--f-mono); font-size: 11.5px; color: var(--space-muted); display: flex; flex-direction: column; gap: 3px; min-height: 5.2em; }
+.log div:first-child { color: var(--space-fg); }
+
+/* Rotation-curve test: light/dark-aware card */
+.test {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 300px;
+}
+@media (max-width: 860px) { .test { grid-template-columns: minmax(0, 1fr); } }
+.chart-wrap { padding: 18px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.chart { width: 100%; height: clamp(280px, 42vw, 420px); display: block; }
+.test .side { border-color: var(--line); }
+.test .side h3 { color: var(--muted); }
+.test .ctrl label { color: var(--fg); }
+.test .ctrl label output, .test .ctrl .hint { color: var(--muted); }
+.test input[type="range"] { accent-color: var(--other); }
+.keys { display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.keys span::before { content: ""; display: inline-block; width: 18px; height: 3px; margin-right: 6px; vertical-align: middle; background: currentColor; }
+.keys .k-obs { color: var(--fg); }
+.keys .k-vis { color: var(--muted); }
+.keys .k-ext { color: var(--other); }
+.readout { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.readout .line { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed var(--line); padding-bottom: 6px; }
+.readout .line span:last-child { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.verdict { border-left: 4px solid var(--bad); padding: 10px 12px; background: color-mix(in srgb, var(--bad) 8%, transparent); border-radius: 0 8px 8px 0; font-size: 14px; line-height: 1.45; }
+.verdict.warn { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 9%, transparent); }
+
+/* Findings */
+.findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.finding { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.pill { align-self: flex-start; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid currentColor; }
+.pill.bad { color: var(--bad); } .pill.warn { color: var(--warn); } .pill.good { color: var(--good); }
+.finding p { font-size: 15.5px; }
+ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+a { color: var(--ours); }
+footer { font-size: 14px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<main>
+  <header class="stack prose">
+    <span class="eyebrow">A testable multiverse idea</span>
+    <h1>Marbles on the Sheet</h1>
+    <p class="lede">Picture every universe as a marble resting on one shared sheet of space. Each marble dents the sheet. We can't see past our own marble's edge, because light from beyond it never reaches us. But the dents from other marbles could still tilt the sheet under us.</p>
+    <p>The theory makes three claims. This page simulates each one and checks it against real numbers.</p>
+    <ul>
+      <li><strong>Dark matter is other universes.</strong> The extra gravity we measure in galaxies comes from neighbouring marbles, not unseen particles.</li>
+      <li><strong>Collisions make big bangs.</strong> Marbles drift together, merge into dense wells, and those wells become new universes.</li>
+      <li><strong>Our edges are pulled unevenly.</strong> Several neighbours tug on different sides of our universe at once.</li>
+    </ul>
+  </header>
+
+  <section class="stack">
+    <div class="stack prose">
+      <span class="eyebrow">Simulation 1 · the sheet</span>
+      <h2>The multiverse as a wavy sea</h2>
+      <p>Each marble dents the sheet according to its mass. Marbles roll toward each other's dents, merge, and once a merged well passes the big-bang threshold it flashes into a <strong>newborn universe</strong>. The <span class="ours">teal ring</span> around our universe shows how the neighbours stretch its edges, exaggerated so you can see it. Drag to turn the view.</p>
+    </div>
+    <div class="panel">
+      <div class="viewport" id="vp">
+        <div class="legend">
+          <div><i style="background:#3CC4C1"></i>our universe</div>
+          <div><i style="background:#E8963F"></i>other universes</div>
+          <div><i style="background:#FFE7A8"></i>newborn (after a big bang)</div>
+        </div>
+        <div class="tag" id="ourTag">our universe</div>
+        <div class="vp-buttons">
+          <button id="zoomIn" aria-label="Zoom in">+</button>
+          <button id="zoomOut" aria-label="Zoom out">−</button>
+        </div>
+      </div>
+      <div class="side">
+        <div class="stats">
+          <div class="stat"><b id="sCount">0</b><span>universes</span></div>
+          <div class="stat"><b id="sBangs">0</b><span>big bangs</span></div>
+          <div class="stat"><b id="sBig">0</b><span>largest well (×ours)</span></div>
+          <div class="stat"><b id="sTide">0%</b><span>uneven edge pull</span></div>
+        </div>
+        <div class="log" id="log" aria-live="polite"><div>Simulation started.</div></div>
+        <h3>Controls</h3>
+        <div class="ctrl">
+          <label for="nUni">Universes on the sheet <output id="nUniOut">36</output></label>
+          <input type="range" id="nUni" min="6" max="80" step="1" value="36">
+        </div>
+        <div class="ctrl">
+          <label for="thr">Big-bang threshold <output id="thrOut">6× ours</output></label>
+          <input type="range" id="thr" min="2" max="20" step="1" value="6">
+          <span class="hint">Merged mass needed before a well ignites.</span>
+        </div>
+        <div class="ctrl">
+          <label for="hub">Sheet expansion <output id="hubOut">0.15</output></label>
+          <input type="range" id="hub" min="0" max="0.8" step="0.01" value="0.15">
+          <span class="hint">Stretching of the sheet. It slows marbles down and keeps the sea from collapsing into one lump.</span>
+        </div>
+        <div class="ctrl">
+          <label for="spd">Speed <output id="spdOut">1.0×</output></label>
+          <input type="range" id="spd" min="0.2" max="3" step="0.1" value="1">
+        </div>
+        <label class="check"><input type="checkbox" id="feed" checked> Keep adding new marbles</label>
+        <div class="row">
+          <button id="pause">Pause</button>
+          <button id="drop">Drop a marble</button>
+          <button id="reset">Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="stack prose">
+      <span class="eyebrow">Test 1 · the dark-matter claim</span>
+      <h2>Can other universes hold a galaxy together?</h2>
+      <p>This is the strongest evidence for dark matter. Stars at the edge of a galaxy orbit far too fast for the visible mass to hold them. The measured speed stays flat at about 200 km/s instead of dropping off. If other universes are the cause, their pull has to supply the missing inward force.</p>
+      <p>The test puts a Milky Way–sized galaxy inside our universe and surrounds it with 30 neighbour universes in random directions, all beyond our 46.5-billion-light-year horizon. Turn the sliders up and see whether the <span class="other">orange band</span> (stars orbiting in every direction around the disk) ever lies on the flat measured curve.</p>
+    </div>
+    <div class="test">
+      <div class="chart-wrap">
+        <canvas class="chart" id="chart" role="img" aria-label="Galaxy rotation speed versus radius: measured, visible matter only, and visible matter plus neighbour universes"></canvas>
+        <div class="keys">
+          <span class="k-obs">measured shape (typical spiral)</span>
+          <span class="k-vis">visible matter only</span>
+          <span class="k-ext">with neighbour universes (band = all directions)</span>
+        </div>
+      </div>
+      <div class="side">
+        <h3>Neighbour universes</h3>
+        <div class="ctrl">
+          <label for="mExt">Mass of each <output id="mExtOut">1×</output></label>
+          <input type="range" id="mExt" min="0" max="10" step="0.1" value="0">
+          <span class="hint">In units of all the ordinary matter in our observable universe (about 1.5 × 10⁵³ kg).</span>
+        </div>
+        <div class="ctrl">
+          <label for="dExt">Nearest distance <output id="dExtOut">60 Gly</output></label>
+          <input type="range" id="dExt" min="47" max="500" step="1" value="60">
+          <span class="hint">Billions of light-years. Our horizon is 46.5 Gly, so nothing can be closer.</span>
+        </div>
+        <div class="readout">
+          <div class="line"><span>Missing pull at 30 kpc</span><span id="rNeed">–</span></div>
+          <div class="line"><span>Neighbours supply (best direction)</span><span id="rBest">–</span></div>
+          <div class="line"><span>Neighbours supply (average)</span><span id="rMean">–</span></div>
+          <div class="line"><span>Net pull through a sphere around the galaxy</span><span id="rFlux">–</span></div>
+        </div>
+        <div class="verdict" id="verdict">–</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="stack prose">
+      <span class="eyebrow">What the simulation says</span>
+      <h2>Results, claim by claim</h2>
+    </div>
+    <div class="findings">
+      <article class="finding">
+        <span class="pill bad">Fails as stated</span>
+        <h3>Other universes replacing dark matter</h3>
+        <p><strong>Too weak.</strong> With neighbours the size of our observable universe, the extra pull is hundreds of thousands of times too small, even with every neighbour parked just outside our horizon. A universe 60 billion light-years away is far from every galaxy, so its pull is almost identical everywhere in our universe.</p>
+        <p><strong>Wrong shape.</strong> A pull that's the same everywhere moves the whole galaxy at once and can't hold stars in orbit. Only the difference across the galaxy (the tidal part) matters. By Gauss's law, gravity from mass outside a region adds zero net inward pull through any sphere around it. Pull on one side always comes with push on another. Dark matter's effect is a net inward pull, which needs mass inside the orbit.</p>
+        <p><strong>Wrong place.</strong> Lensing maps, such as the Bullet Cluster's, show the hidden mass sitting on each individual galaxy cluster. A distant source would stretch the whole sky in one direction instead.</p>
+      </article>
+      <article class="finding">
+        <span class="pill warn">Plausible, not testable here</span>
+        <h3>Collisions making big bangs</h3>
+        <p>On the sheet, attraction does what you predicted. Marbles gather into filaments and dense wells, and the pattern looks like a neural network or a choppy sea. Our own universe has a similar cosmic web of galaxies, built by gravity.</p>
+        <p>Physicists have studied a related idea: bubble universes colliding in eternal inflation. A collision would leave a round, disc-shaped mark on the cosmic microwave background (CMB). Searches of WMAP data (Feeney et al., 2011) found no convincing signal. The search is still a good model for how to test this claim.</p>
+      </article>
+      <article class="finding">
+        <span class="pill good">Testable prediction</span>
+        <h3>Uneven pull on our edges</h3>
+        <p>This is the strongest part of the idea. Neighbours near some sides of our universe would stretch it more along one axis, as the teal ring shows. That predicts expansion that runs slightly faster in some directions, plus a matching distortion in the largest patterns of the CMB.</p>
+        <p>Astronomers have reported hints of exactly this kind of thing: the CMB "axis of evil" alignment, a claimed "dark flow" of galaxy clusters, and direction-dependent Hubble measurements. All are disputed. Your model would predict that they all point along the same axis, and that can be checked.</p>
+      </article>
+      <article class="finding">
+        <span class="pill warn">A version that could work</span>
+        <h3>How to rescue the dark-matter part</h3>
+        <p>The tests rule out neighbours that are far away across the sheet. They don't rule out a universe that's close to ours in a hidden direction, lying right under our galaxies, the way two sheets of paper stack. Its matter would then pull from inside each galaxy's orbit, which is what the data needs.</p>
+        <p>Physicists have proposed this as brane-world "shadow matter." To test it, the hidden mass has to follow the visible mass closely, which is a sharper prediction than particle dark matter makes.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="prose stack">
+    <p>How it works: Simulation 1 uses softened Newtonian gravity on a wrap-around sheet in made-up units, so it shows behaviour, not real scales. Test 1 uses real SI values. The galaxy has 6 × 10¹⁰ solar masses of visible matter (Hernquist profile, 3 kpc scale). Each neighbour's tidal pull is computed from its exact distance and direction. The "measured" curve is a stylised spiral-galaxy curve that flattens near 200 km/s, not a specific dataset.</p>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+"use strict";
+const $ = (id) => document.getElementById(id);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------------- Simulation 1: the sheet ---------------- */
+const L = 240, HALF = L / 2, G = 420, EPS = 4, SOFT = 7, DEPTH = 9;
+const NGRID = 110;
+const sim = { bodies: [], bangs: 0, running: !reduceMotion, feedTimer: 0, nextId: 1, rings: [] };
+const radiusOf = (m) => 6.5 * Math.cbrt(m);
+const wrap = (v) => ((v + HALF) % L + L) % L - HALF;
+const mi = (d) => d - L * Math.round(d / L); // minimum-image separation
+
+function addBody(opts) {
+  const m = opts.m ?? (0.35 + Math.random() * 2.2);
+  const b = { id: sim.nextId++, x: opts.x, y: opts.y, vx: opts.vx ?? (Math.random() - 0.5) * 6, vy: opts.vy ?? (Math.random() - 0.5) * 6,
+    m, r: radiusOf(m), ours: !!opts.ours, born: 0, mesh: null };
+  sim.bodies.push(b);
+  return b;
+}
+function randomFreeSpot() {
+  for (let k = 0; k < 40; k++) {
+    const x = (Math.random() - 0.5) * L, y = (Math.random() - 0.5) * L;
+    if (sim.bodies.every((b) => Math.hypot(mi(b.x - x), mi(b.y - y)) > b.r + 14)) return { x, y };
+  }
+  return { x: (Math.random() - 0.5) * L, y: (Math.random() - 0.5) * L };
+}
+function logEvent(msg) {
+  const el = $("log");
+  const d = document.createElement("div");
+  d.textContent = msg;
+  el.prepend(d);
+  while (el.children.length > 4) el.lastChild.remove();
+}
+
+function step(dt) {
+  const B = sim.bodies, n = B.length;
+  const H = +$("hub").value;
+  const ax = new Float64Array(n), ay = new Float64Array(n);
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+    const dx = mi(B[j].x - B[i].x), dy = mi(B[j].y - B[i].y);
+    const r2 = dx * dx + dy * dy + EPS * EPS, inv = G / (r2 * Math.sqrt(r2));
+    ax[i] += dx * inv * B[j].m; ay[i] += dy * inv * B[j].m;
+    ax[j] -= dx * inv * B[i].m; ay[j] -= dy * inv * B[i].m;
+  }
+  for (let i = 0; i < n; i++) {
+    const b = B[i];
+    b.vx += (ax[i] - H * b.vx) * dt; b.vy += (ay[i] - H * b.vy) * dt;
+    const sp = Math.hypot(b.vx, b.vy); if (sp > 90) { b.vx *= 90 / sp; b.vy *= 90 / sp; }
+    b.x = wrap(b.x + b.vx * dt); b.y = wrap(b.y + b.vy * dt);
+    if (b.born > 0) b.born = Math.max(0, b.born - dt);
+  }
+  // merges
+  const thr = +$("thr").value;
+  for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) {
+    const a = B[i], c = B[j];
+    if (Math.hypot(mi(c.x - a.x), mi(c.y - a.y)) < (a.r + c.r) * 0.62) {
+      const m = a.m + c.m, big = a.m >= c.m ? a : c, small = big === a ? c : a;
+      const dx = mi(small.x - big.x), dy = mi(small.y - big.y);
+      big.x = wrap(big.x + dx * small.m / m); big.y = wrap(big.y + dy * small.m / m);
+      big.vx = (a.vx * a.m + c.vx * c.m) / m; big.vy = (a.vy * a.m + c.vy * c.m) / m;
+      const wasOurs = a.ours || c.ours;
+      big.m = m; big.r = radiusOf(m); big.ours = wasOurs;
+      if (wasOurs) logEvent("Our universe merged with a neighbour.");
+      if (m >= thr) {
+        sim.bangs++; big.born = 2.5; spawnRing(big);
+        logEvent(`Big bang #${sim.bangs}: a well of ${m.toFixed(1)}× our mass ignited.`);
+      }
+      removeBody(small);
+      B.splice(B.indexOf(small), 1);
+      j = i; // restart inner scan for this body
+    }
+  }
+}
+
+/* Tidal tensor at our universe: how unevenly the neighbours pull on its edges */
+function tideOnOurs() {
+  const o = sim.bodies.find((b) => b.ours);
+  if (!o) return null;
+  let txx = 0, txy = 0, tyy = 0;
+  for (const b of sim.bodies) {
+    if (b === o) continue;
+    const dx = mi(b.x - o.x), dy = mi(b.y - o.y), d = Math.hypot(dx, dy) + EPS;
+    const nx = dx / d, ny = dy / d, k = G * b.m / (d * d * d);
+    txx += k * (3 * nx * nx - 1); txy += k * 3 * nx * ny; tyy += k * (3 * ny * ny - 1);
+  }
+  const self = G * o.m / (o.r * o.r * o.r);  // own gravity at the edge, per unit radius
+  return { o, txx: txx / self, txy: txy / self, tyy: tyy / self };
+}
+
+/* --- three.js scene --- */
+const vp = $("vp");
+let renderer, scene, camera, sheet, sheetWire, heights, ourRing, ringPos;
+const cam = { theta: 0.6, phi: 1.0, dist: 300 };
+const tmpColor = new THREE.Color();
+const COL_OTHER = new THREE.Color("#E8963F"), COL_OURS = new THREE.Color("#3CC4C1"), COL_NEW = new THREE.Color("#FFE7A8");
+
+function initScene() {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  vp.prepend(renderer.domElement);
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color("#070A11");
+  scene.fog = new THREE.Fog("#070A11", 260, 560);
+  camera = new THREE.PerspectiveCamera(45, 1, 1, 2000);
+  scene.add(new THREE.AmbientLight(0x8899bb, 0.55));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.9); sun.position.set(120, 220, 80); scene.add(sun);
+
+  const geo = new THREE.PlaneGeometry(L, L, NGRID, NGRID);
+  geo.rotateX(-Math.PI / 2);
+  geo.setAttribute("color", new THREE.BufferAttribute(new Float32Array(geo.attributes.position.count * 3), 3));
+  sheet = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0.05, side: THREE.DoubleSide }));
+  sheetWire = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x5b7aa8, wireframe: true, transparent: true, opacity: 0.16 }));
+  scene.add(sheet, sheetWire);
+  heights = new Float32Array(geo.attributes.position.count);
+
+  const ringGeo = new THREE.BufferGeometry();
+  ringPos = new Float32Array(97 * 3);
+  ringGeo.setAttribute("position", new THREE.BufferAttribute(ringPos, 3));
+  ourRing = new THREE.Line(ringGeo, new THREE.LineBasicMaterial({ color: 0x5ff0ea }));
+  scene.add(ourRing);
+  resize();
+}
+function potentialAt(x, y) {
+  let p = 0;
+  for (const b of sim.bodies) {
+    const dx = mi(b.x - x), dy = mi(b.y - y);
+    p -= b.m / Math.sqrt(dx * dx + dy * dy + SOFT * SOFT);
+  }
+  return p * SOFT * DEPTH;
+}
+let zOffset = 0;
+function updateSheet() {
+  const pos = sheet.geometry.attributes.position, col = sheet.geometry.attributes.color;
+  let maxP = -Infinity, minP = Infinity;
+  for (let i = 0; i < pos.count; i++) {
+    const p = potentialAt(pos.getX(i), -pos.getZ(i));
+    heights[i] = p; if (p > maxP) maxP = p; if (p < minP) minP = p;
+  }
+  zOffset = -maxP;
+  const span = Math.max(1e-6, maxP - minP);
+  for (let i = 0; i < pos.count; i++) {
+    const h = heights[i] + zOffset;
+    pos.setY(i, h);
+    const t = Math.pow((maxP - heights[i]) / span, 0.6);
+    tmpColor.setRGB(0.05 + 0.25 * t, 0.08 + 0.55 * t, 0.15 + 0.5 * t);
+    col.setXYZ(i, tmpColor.r, tmpColor.g, tmpColor.b);
+  }
+  pos.needsUpdate = true; col.needsUpdate = true;
+  sheet.geometry.computeVertexNormals();
+}
+const sphereGeo = new THREE.SphereGeometry(1, 28, 20);
+function meshFor(b) {
+  if (!b.mesh) {
+    b.mesh = new THREE.Mesh(sphereGeo, new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.1, emissive: 0x000000 }));
+    scene.add(b.mesh);
+  }
+  return b.mesh;
+}
+function removeBody(b) { if (b.mesh) { scene.remove(b.mesh); b.mesh.material.dispose(); b.mesh = null; } }
+function spawnRing(b) {
+  const g = new THREE.RingGeometry(0.9, 1, 64); g.rotateX(-Math.PI / 2);
+  const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffe7a8, transparent: true, opacity: 1, side: THREE.DoubleSide }));
+  scene.add(mesh);
+  sim.rings.push({ mesh, x: b.x, y: b.y, t: 0 });
+}
+function updateMeshes(dt) {
+  for (const b of sim.bodies) {
+    const m = meshFor(b);
+    const inflate = b.born > 0 ? 1 + 0.5 * Math.sin(Math.PI * b.born / 2.5) : 1;
+    const r = b.r * 0.55 * inflate;
+    m.scale.setScalar(r);
+    m.position.set(b.x, potentialAt(b.x, b.y) + zOffset + r * 0.6, -b.y);
+    const base = b.ours ? COL_OURS : COL_OTHER;
+    if (b.born > 0) { m.material.color.copy(base).lerp(COL_NEW, Math.min(1, b.born / 1.5)); m.material.emissive.copy(COL_NEW).multiplyScalar(b.born / 2.5 * 0.8); }
+    else { m.material.color.copy(base); m.material.emissive.setRGB(0, 0, 0); if (b.ours) m.material.emissive.copy(COL_OURS).multiplyScalar(0.25); }
+  }
+  for (let k = sim.rings.length - 1; k >= 0; k--) {
+    const R = sim.rings[k]; R.t += dt;
+    const s = 4 + R.t * 70; R.mesh.scale.setScalar(s);
+    R.mesh.position.set(R.x, potentialAt(R.x, R.y) + zOffset + 1.5, -R.y);
+    R.mesh.material.opacity = Math.max(0, 1 - R.t / 1.4);
+    if (R.t > 1.4) { scene.remove(R.mesh); R.mesh.geometry.dispose(); R.mesh.material.dispose(); sim.rings.splice(k, 1); }
+  }
+}
+function updateTide() {
+  const t = tideOnOurs();
+  if (!t) { ourRing.visible = false; $("ourTag").hidden = true; $("sTide").textContent = "–"; return; }
+  ourRing.visible = true;
+  const { o, txx, txy, tyy } = t;
+  const R = o.r * 1.25, gain = 6;
+  const baseY = potentialAt(o.x, o.y) + zOffset + 0.8;
+  for (let k = 0; k <= 96; k++) {
+    const a = (k / 96) * Math.PI * 2, px = Math.cos(a), py = Math.sin(a);
+    let ex = (txx * px + txy * py) * gain, ey = (txy * px + tyy * py) * gain;
+    const mag = Math.hypot(ex, ey); if (mag > 0.8) { ex *= 0.8 / mag; ey *= 0.8 / mag; }
+    ringPos[k * 3] = o.x + R * (px + ex); ringPos[k * 3 + 1] = baseY; ringPos[k * 3 + 2] = -(o.y + R * (py + ey));
+  }
+  ourRing.geometry.attributes.position.needsUpdate = true;
+  const tr = (txx + tyy) / 2, det = Math.sqrt(((txx - tyy) / 2) ** 2 + txy * txy);
+  $("sTide").textContent = (2 * det * 100).toFixed(det < 0.005 ? 2 : 1) + "%";
+  void tr;
+  // label
+  const v = new THREE.Vector3(o.x, baseY + o.r * 1.3, -o.y).project(camera);
+  const tag = $("ourTag");
+  tag.hidden = v.z > 1;
+  tag.style.left = ((v.x + 1) / 2 * vp.clientWidth) + "px";
+  tag.style.top = ((1 - v.y) / 2 * vp.clientHeight) + "px";
+}
+function placeCamera() {
+  cam.phi = Math.min(1.45, Math.max(0.25, cam.phi));
+  cam.dist = Math.min(520, Math.max(120, cam.dist));
+  camera.position.set(cam.dist * Math.sin(cam.phi) * Math.sin(cam.theta), cam.dist * Math.cos(cam.phi), cam.dist * Math.sin(cam.phi) * Math.cos(cam.theta));
+  camera.lookAt(0, -18, 0);
+}
+function resize() {
+  const w = vp.clientWidth, h = vp.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+function stats() {
+  $("sCount").textContent = sim.bodies.length;
+  $("sBangs").textContent = sim.bangs;
+  const ours = sim.bodies.find((b) => b.ours);
+  const big = sim.bodies.reduce((m, b) => Math.max(m, b.m), 0);
+  $("sBig").textContent = ours ? (big / ours.m).toFixed(1) : big.toFixed(1);
+}
+function reset() {
+  for (const b of sim.bodies) removeBody(b);
+  for (const R of sim.rings) scene.remove(R.mesh);
+  sim.bodies = []; sim.rings = []; sim.bangs = 0;
+  addBody({ x: 0, y: 0, m: 1, vx: 0, vy: 0, ours: true });
+  const n = +$("nUni").value;
+  for (let k = 1; k < n; k++) addBody(randomFreeSpot());
+  $("log").innerHTML = "<div>Sheet reset.</div>";
+}
+
+let last = performance.now();
+function frame(now) {
+  const dtReal = Math.min(0.05, (now - last) / 1000); last = now;
+  if (sim.running) {
+    const dt = dtReal * +$("spd").value, sub = 3;
+    for (let s = 0; s < sub; s++) step(dt / sub);
+    if ($("feed").checked) {
+      sim.feedTimer += dt;
+      if (sim.feedTimer > 1.2 && sim.bodies.length < +$("nUni").value) { sim.feedTimer = 0; addBody(randomFreeSpot()); }
+    }
+  }
+  updateSheet(); updateMeshes(sim.running ? dtReal : 0); updateTide(); stats();
+  placeCamera();
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+
+function wireSheetUI() {
+  const bind = (id, fmt) => { const el = $(id), out = $(id + "Out"); const f = () => (out.textContent = fmt(+el.value)); el.addEventListener("input", f); f(); };
+  bind("nUni", (v) => v);
+  bind("thr", (v) => v + "× ours");
+  bind("hub", (v) => v.toFixed(2));
+  bind("spd", (v) => v.toFixed(1) + "×");
+  $("pause").textContent = sim.running ? "Pause" : "Play";
+  $("pause").onclick = () => { sim.running = !sim.running; $("pause").textContent = sim.running ? "Pause" : "Play"; };
+  $("drop").onclick = () => { addBody(randomFreeSpot()); logEvent("A new marble was dropped on the sheet."); };
+  $("reset").onclick = reset;
+  $("zoomIn").onclick = () => (cam.dist *= 0.85);
+  $("zoomOut").onclick = () => (cam.dist /= 0.85);
+  let drag = null;
+  vp.addEventListener("pointerdown", (e) => { if (e.target.closest("button")) return; drag = { x: e.clientX, y: e.clientY, touch: e.pointerType === "touch" }; vp.setPointerCapture(e.pointerId); });
+  vp.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    cam.theta -= (e.clientX - drag.x) * 0.008;
+    if (!drag.touch) cam.phi -= (e.clientY - drag.y) * 0.006;
+    drag.x = e.clientX; drag.y = e.clientY;
+  });
+  const end = () => (drag = null);
+  vp.addEventListener("pointerup", end); vp.addEventListener("pointercancel", end);
+  new ResizeObserver(resize).observe(vp);
+}
+
+if (window.THREE) {
+  initScene(); wireSheetUI(); reset(); requestAnimationFrame(frame);
+} else {
+  vp.insertAdjacentHTML("beforeend", '<p style="padding:24px;color:#DCE3EE">The 3D library did not load, so the sheet cannot be drawn. Reload the page to try again.</p>');
+}
+
+/* ---------------- Test 1: rotation curve ---------------- */
+const SI = { G: 6.674e-11, Msun: 1.989e30, kpc: 3.086e19, Gly: 9.461e24, Muni: 1.5e53 };
+const Mvis = 6e10 * SI.Msun, aVis = 3 * SI.kpc;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rnd = mulberry32(7);
+const neighbours = Array.from({ length: 30 }, () => {
+  const z = 2 * rnd() - 1, ph = 2 * Math.PI * rnd(), s = Math.sqrt(1 - z * z);
+  return { n: [s * Math.cos(ph), s * Math.sin(ph), z], f: 1 + 2 * rnd() };
+});
+// tidal tensor T (per unit displacement): a_tidal = T · x
+function tidalTensor(Mkg, DminM) {
+  const T = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (const nb of neighbours) {
+    const D = DminM * nb.f, k = SI.G * Mkg / (D * D * D);
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) T[i][j] += k * (3 * nb.n[i] * nb.n[j] - (i === j ? 1 : 0));
+  }
+  return T;
+}
+const aVisAt = (r) => SI.G * Mvis / ((r + aVis) * (r + aVis));
+const vObs = (r) => { const rc = 4 * SI.kpc, V = 200e3; const x = r / rc; return Math.sqrt(r * aVisAt(r) + V * V * (1 - Math.atan(x) / x)); };
+function ringInward(T, r) {
+  // inward tidal acceleration for stars on a ring of radius r in the disk plane (x-y)
+  const out = [];
+  for (let k = 0; k < 180; k++) {
+    const a = (k / 180) * 2 * Math.PI, ux = Math.cos(a), uy = Math.sin(a);
+    out.push(-r * (ux * (T[0][0] * ux + T[0][1] * uy) + uy * (T[1][0] * ux + T[1][1] * uy)));
+  }
+  return out;
+}
+function sphereFlux(T, r) {
+  // average inward tidal pull over a whole sphere (Fibonacci points)
+  const N = 2000, gold = Math.PI * (3 - Math.sqrt(5)); let s = 0;
+  for (let k = 0; k < N; k++) {
+    const z = 1 - 2 * (k + 0.5) / N, rr = Math.sqrt(1 - z * z), ph = k * gold, u = [rr * Math.cos(ph), rr * Math.sin(ph), z];
+    let q = 0; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) q += u[i] * T[i][j] * u[j];
+    s += -r * q;
+  }
+  return s / N;
+}
+const sup = (s) => s.split("").map((c) => (c === "-" ? "⁻" : "⁰¹²³⁴⁵⁶⁷⁸⁹"["0123456789".indexOf(c)])).join("");
+const fmtSci = (x) => { const e = Math.floor(Math.log10(Math.abs(x)) + 1e-9), m = x / 10 ** e; return e >= -2 && e <= 2 ? String(+x.toPrecision(3)) : `${m.toFixed(1)}×10${sup(String(e))}`; };
+const fmtA = (a) => (a === 0 ? "0" : fmtSci(a) + " m/s²");
+
+const chart = $("chart");
+function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function drawChart() {
+  const lg = +$("mExt").value, dGly = +$("dExt").value;
+  $("mExtOut").textContent = fmtSci(10 ** lg) + "×";
+  $("dExtOut").textContent = dGly + " Gly";
+  const T = tidalTensor(10 ** lg * SI.Muni, dGly * SI.Gly);
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2), W = chart.clientWidth, Hh = chart.clientHeight;
+  chart.width = W * dpr; chart.height = Hh * dpr;
+  const g = chart.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, Hh);
+  const pad = { l: 52, r: 14, t: 14, b: 40 }, Rmax = 50, Vmax = 350;
+  const X = (r) => pad.l + (r / Rmax) * (W - pad.l - pad.r), Y = (v) => pad.t + (1 - Math.min(v, Vmax) / Vmax) * (Hh - pad.t - pad.b);
+  const fg = css("--fg"), muted = css("--muted"), line = css("--line"), other = css("--other");
+  g.font = `12px ${css("--f-mono")}`; g.lineWidth = 1;
+  // grid + axes
+  g.strokeStyle = line; g.fillStyle = muted; g.textAlign = "right"; g.textBaseline = "middle";
+  for (let v = 0; v <= Vmax; v += 50) { g.beginPath(); g.moveTo(X(0), Y(v)); g.lineTo(X(Rmax), Y(v)); g.stroke(); g.fillText(v, pad.l - 8, Y(v)); }
+  g.textAlign = "center"; g.textBaseline = "top";
+  for (let r = 0; r <= Rmax; r += 10) { g.fillText(r, X(r), Hh - pad.b + 8); }
+  g.fillText("distance from galaxy centre (kpc)", (X(0) + X(Rmax)) / 2, Hh - 16);
+  g.save(); g.translate(14, (pad.t + Hh - pad.b) / 2); g.rotate(-Math.PI / 2); g.textBaseline = "middle"; g.fillText("orbital speed (km/s)", 0, 0); g.restore();
+
+  const rs = []; for (let k = 1; k <= 120; k++) rs.push((k / 120) * Rmax);
+  // band from neighbours
+  const lo = [], hi = [], mean = [];
+  for (const rk of rs) {
+    const r = rk * SI.kpc, inw = ringInward(T, r), base = aVisAt(r);
+    const vs = inw.map((a) => Math.sqrt(Math.max(0, r * (base + a))) / 1e3);
+    lo.push(Math.min(...vs)); hi.push(Math.max(...vs));
+    mean.push(Math.sqrt(Math.max(0, r * (base + inw.reduce((s, a) => s + a, 0) / inw.length))) / 1e3);
+  }
+  g.fillStyle = other; g.globalAlpha = 0.22; g.beginPath();
+  rs.forEach((rk, i) => (i ? g.lineTo(X(rk), Y(hi[i])) : g.moveTo(X(rk), Y(hi[i]))));
+  for (let i = rs.length - 1; i >= 0; i--) g.lineTo(X(rs[i]), Y(lo[i]));
+  g.closePath(); g.fill(); g.globalAlpha = 1;
+  const curve = (vals, color, width, dash) => { g.strokeStyle = color; g.lineWidth = width; g.setLineDash(dash); g.beginPath(); rs.forEach((rk, i) => (i ? g.lineTo(X(rk), Y(vals[i])) : g.moveTo(X(rk), Y(vals[i])))); g.stroke(); g.setLineDash([]); };
+  curve(rs.map((rk) => vObs(rk * SI.kpc) / 1e3), fg, 2.5, []);
+  curve(rs.map((rk) => Math.sqrt(rk * SI.kpc * aVisAt(rk * SI.kpc)) / 1e3), muted, 2, [6, 5]);
+  curve(mean, other, 2, []);
+  // marker at 30 kpc
+  g.strokeStyle = muted; g.setLineDash([2, 4]); g.beginPath(); g.moveTo(X(30), Y(Vmax)); g.lineTo(X(30), Y(0)); g.stroke(); g.setLineDash([]);
+
+  // readouts at 30 kpc
+  const r30 = 30 * SI.kpc, need = (vObs(r30) ** 2) / r30 - aVisAt(r30), inw = ringInward(T, r30);
+  const best = Math.max(...inw), worst = Math.min(...inw), avg = inw.reduce((s, a) => s + a, 0) / inw.length, flux = sphereFlux(T, r30);
+  $("rNeed").textContent = fmtA(need);
+  $("rBest").textContent = fmtA(best);
+  $("rMean").textContent = fmtA(avg);
+  $("rFlux").textContent = Math.abs(flux) < Math.abs(best) * 1e-3 ? "0 (Gauss's law)" : fmtA(flux);
+  const v = $("verdict"), ratio = best / need;
+  if (ratio < 0.01) {
+    v.className = "verdict";
+    v.textContent = `Far too weak. In the best direction the neighbours supply ${ratio < 1e-4 ? "about 1 / " + Math.round(1 / ratio).toLocaleString() : (ratio * 100).toFixed(2) + "%"} of the missing pull. The orange band sits on the dashed visible-matter line.`;
+  } else if (ratio < 0.5) {
+    v.className = "verdict warn";
+    v.textContent = `Now noticeable (${(ratio * 100).toFixed(0)}% in the best direction), but each neighbour already outweighs our universe ${fmtSci(10 ** lg)} times. The pull is also lopsided: on one axis stars are pulled in, on the other they're pushed out.`;
+  } else {
+    v.className = "verdict";
+    v.textContent = `Strong enough in one direction, but it tears the galaxy. Stars on one axis are flung outward (${fmtA(worst)}), and the speed keeps climbing with distance instead of staying flat. Averaged over a sphere the pull is zero, so it can't act like hidden mass.`;
+  }
+}
+["mExt", "dExt"].forEach((id) => $(id).addEventListener("input", drawChart));
+new ResizeObserver(drawChart).observe(chart);
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawChart);
+new MutationObserver(drawChart).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+drawChart();
+})();
+</script>
+
+</body>
+</html>
