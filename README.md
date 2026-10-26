@@ -48,7 +48,10 @@ With one set of settings for all galaxies, the stacked sheet cuts the rotation-c
 matter only) to 0.18 dex, and a ~3 kpc gap between the sheets fits clearly better than none. Fitted galaxy by
 galaxy, though, no single gap fits most of them (48% vs the ~68% a universal gap needs): core sizes grow weakly
 with galaxy size. Star-explosion gas loss added to the two-sheet simulation did not produce the hidden-matter
-trend the stacked sheet needs. A varying ("wavy") gap predicts that galaxies near each other share core sizes.
+trend the stacked sheet needs. A varying ("wavy") gap predicts that galaxies near each other share core sizes. Tested with
+`analysis/wavy_gap_test.py` (positions in `data/sparc_coords.json`, from the CDS Sesame resolver): nearby galaxies'
+gaps are ~25% more similar than random pairs (p = 0.003), but after controlling for distance from us the same
+effect is only p = 0.11. Suggestive, not established.
 
 ## Test suite result
 
