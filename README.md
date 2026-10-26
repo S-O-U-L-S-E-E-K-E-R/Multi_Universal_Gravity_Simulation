@@ -39,6 +39,17 @@ Open `index.html` in a browser. It needs no build step. three.js loads from cdnj
 job", each fitted on galaxy rotation and then scored, without refitting, against the speed–mass rule, every-galaxy
 coverage, galaxy-cluster mass and the Bullet Cluster.
 
+`analysis/sparc_tests.py` and `analysis/sparc_per_galaxy_gap.py` test the versions against 149 real galaxies from
+the SPARC catalogue (download links in the script headers).
+
+## Real-galaxy result (SPARC)
+
+With one set of settings for all galaxies, the stacked sheet cuts the rotation-curve miss from 0.57 dex (visible
+matter only) to 0.18 dex, and a ~3 kpc gap between the sheets fits clearly better than none. Fitted galaxy by
+galaxy, though, no single gap fits most of them (48% vs the ~68% a universal gap needs): core sizes grow weakly
+with galaxy size. Star-explosion gas loss added to the two-sheet simulation did not produce the hidden-matter
+trend the stacked sheet needs. A varying ("wavy") gap predicts that galaxies near each other share core sizes.
+
 ## Test suite result
 
 Only a stacked hidden sheet whose matter collects under our galaxies passes all five tests, and only if small galaxies
