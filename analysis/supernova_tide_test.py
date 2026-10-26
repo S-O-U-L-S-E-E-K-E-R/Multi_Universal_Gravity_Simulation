@@ -132,10 +132,52 @@ def tide_fit(ol0_of_om):
     return best
 
 
+# A big universe close to a well is pulled harder on the near side than the far side, so the stretch is lopsided:
+# add a one-sided (dipole) term d * P1 on the same axis. The axis now needs the full sky (the sign matters).
+FULL = np.concatenate([axes, -axes])
+DIP = np.round(np.arange(-1.5, 1.51, 0.1), 3)
+QUAD = np.round(np.arange(-2.0, 2.01, 0.1), 3)
+
+
+def lopsided_fit(om, ol0):
+    i = int(np.argmin(np.abs(OM - om)))
+    cosang = nvec @ FULL.T                       # [sn, axis]
+    P1, P2 = cosang.T, ((3 * cosang**2 - 1) / 2).T
+    best = (np.inf, None)
+    for dd in DIP:
+        for qq in QUAD:
+            mu = mu_dir_many(i, ol0 + dd * P1 + qq * P2)
+            c = chi2_of(mu); c = np.where(np.isfinite(c), c, np.inf)
+            a = int(np.argmin(c))
+            if c[a] < best[0]:
+                v = FULL[a]
+                best = (float(c[a]), dict(Omega_m=float(OM[i]), Omega_L0=float(ol0), dipole=float(dd), quadrupole=float(qq),
+                                          axis_ra=float(np.degrees(np.arctan2(v[1], v[0])) % 360), axis_dec=float(np.degrees(np.arcsin(v[2])))))
+    return best
+
+
+def mu_dir_many(i, ol):  # ol: [axis, sn]
+    x = (ol - OL[0]) / (OL[1] - OL[0])
+    j0 = np.clip(np.floor(x).astype(int), 0, len(OL) - 2)
+    t = x - j0
+    idx = np.broadcast_to(np.arange(len(z)), ol.shape)
+    return MU[i, j0, idx] * (1 - t) + MU[i, j0 + 1, idx] * t
+
+
+LOPSIDED = "--lopsided" in sys.argv
 c, p = tide_fit(lambda om: 0.0)
 res["tide only (no dark energy)"] = dict(chi2=c, params=p, k=5)
 c, p = tide_fit(lambda om: 1 - om)
 res["dark energy + tide"] = dict(chi2=c, params=p, k=5)
+if LOPSIDED:
+    for om in (0.3,):
+        c, p = lopsided_fit(om, 0.0)
+        res[f"lopsided well alone, matter {om}"] = dict(chi2=c, params=p, k=6)
+        c, p = lopsided_fit(om, 1 - om)
+        res[f"dark energy + lopsided pull, matter {om}"] = dict(chi2=c, params=p, k=6)
+    # reference at the same matter content
+    i = int(np.argmin(np.abs(OM - 0.3))); j = int(np.argmin(np.abs(OL - 0.7)))
+    res["dark energy, matter 0.3"] = dict(chi2=float(chi2_of(MU[i, j])), params=dict(Omega_m=0.3), k=2)
 
 n = len(z)
 print(f"\n{'model':32s} {'chi-square':>11s} {'settings':>9s} {'BIC':>9s}")
