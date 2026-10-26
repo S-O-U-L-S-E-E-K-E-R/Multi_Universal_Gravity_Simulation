@@ -60,6 +60,7 @@ h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); font-weight: 700; letter-spacing: 
 h3 { font-size: 1.1rem; font-weight: 700; }
 p { margin: 0; }
 .stack { display: flex; flex-direction: column; gap: 16px; }
+.scale { align-self: flex-start; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; margin-top: -8px; }
 .eyebrow { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .lede { font-size: 1.15rem; }
 .ours { color: var(--ours); font-weight: 600; }
@@ -157,6 +158,7 @@ footer { font-size: 14px; color: var(--muted); }
   <section class="stack">
     <div class="stack prose">
       <span class="eyebrow">Simulation 1 · the sheet</span>
+      <span class="scale">Scale: whole universes</span>
       <h2>The multiverse on a flat sheet</h2>
       <p>Each universe is a collection of weights (the dots) that move freely; it isn't one solid object. Every universe starts with its own big bang. Its matter is packed densely at the centre and thinly at the edge, and all of it flies outward, so the universe's edge grows over time and its centre thins out. Every weight pulls on every other weight, in its own universe and in the others. Nothing is held in a fixed shape.</p>
       <p>Neighbours can drag a universe's thin outer matter, denting it where dense matter pulls inward and stretching it elsewhere, like dense pieces pressed into expanding play-dough. The outline around each universe shows its current shape. Wherever matter packs together tightly enough, whether gravity pulls it together or it crashes in from two universes, it ignites as a <strong>newborn universe</strong> with its own big bang. Density alone sets it off. The "densest patch" counter shows how close the sheet is getting. Total mass never changes. Switch to the dented view to see the wells in 3D.</p>
@@ -184,6 +186,7 @@ footer { font-size: 14px; color: var(--muted); }
           <div class="stat"><b id="sMass">0</b><span>total mass (stays fixed)</span></div>
           <div class="stat"><b id="sCore">100%</b><span>matter left in our centre</span></div>
           <div class="stat"><b id="sPeak">–</b><span>densest patch now (× newborn core)</span></div>
+          <div class="stat"><b id="sTime">0</b><span>time since start</span></div>
         </div>
         <div class="log" id="log" aria-live="polite"><div>Simulation started.</div></div>
         <h3>Controls</h3>
@@ -198,9 +201,9 @@ footer { font-size: 14px; color: var(--muted); }
           <span class="hint">Applies when you press Reset.</span>
         </div>
         <div class="ctrl">
-          <label for="thr">Density for a big bang <output id="thrOut">0.50×</output></label>
-          <input type="range" id="thr" min="0.05" max="1.5" step="0.05" value="0.5">
-          <span class="hint">How tightly matter must pack into one small patch before it ignites, compared with the core of a newborn universe (1× = just as dense). The real value is unknown, so try different settings.</span>
+          <label for="thr">Density for a big bang <output id="thrOut">2.60×</output></label>
+          <input type="range" id="thr" min="1" max="4" step="0.05" value="2.6">
+          <span class="hint">How tightly matter must pack into one small patch before it ignites, compared with the core of a newborn universe. On this sheet the densest patch normally sits around 1.7–1.8× and passes 2.4× less than 1% of the time, so 2.6× means extreme pile-ups only. The real value is unknown.</span>
         </div>
         <div class="ctrl">
           <label for="spd">Speed <output id="spdOut">1.0×</output></label>
@@ -219,6 +222,7 @@ footer { font-size: 14px; color: var(--muted); }
   <section class="stack">
     <div class="stack prose">
       <span class="eyebrow">Well profile · one universe expanding</span>
+      <span class="scale">Scale: one whole universe</span>
       <h2>Wider, shallower, same far reach</h2>
       <p>This is a side view of one universe's well as it expands. The mass stays the same and only spreads out. Watch three things: how deep the well is at the centre, how strong the pull is at its strongest, and the pull at a fixed point far away (the <span class="other">orange marker</span>).</p>
     </div>
@@ -255,6 +259,7 @@ footer { font-size: 14px; color: var(--muted); }
   <section class="stack">
     <div class="stack prose">
       <span class="eyebrow">Test 1 · the dark-matter claim, edges close together</span>
+      <span class="scale">Scale: one galaxy, neighbours at universe scale</span>
       <h2>Can neighbours touching our edge hold a galaxy together?</h2>
       <p>This is the strongest evidence for dark matter. Stars at the edge of a galaxy orbit far too fast for the visible mass to hold them. The measured speed stays flat at about 200 km/s instead of dropping off. If neighbour universes are the cause, their pull has to supply the missing inward force.</p>
       <p>Here everything sits on a flat sheet. Our universe is the teal disc, 46.5 billion light-years in radius, and the neighbours are the orange discs. Each universe's matter is spread across its whole disc, not packed into a point. Nothing says neighbours have to be far away, since we couldn't see one even if it sat right at our horizon. The edge gap starts at zero, with the neighbours touching us, and set a <strong>gravity reach</strong> so that distant matter stops counting. Each dot is a galaxy, coloured by how much of its missing pull the neighbours supply. Click any galaxy to see its rotation curve.</p>
@@ -305,6 +310,7 @@ footer { font-size: 14px; color: var(--muted); }
   <section class="stack">
     <div class="stack prose">
       <span class="eyebrow">Test 1b · an expanded neighbour overlapping us</span>
+      <span class="scale">Scale: one galaxy</span>
       <h2>What if a neighbour has expanded right through our galaxy?</h2>
       <p>Once an expanded neighbour overlaps our space, some of its matter sits <em>inside</em> each galaxy's orbits, and that matter does pull inward. Test 1 couldn't capture this. The catch is that an expanded universe is spread very thin. This test fills the galaxy with the neighbour's matter at a density you choose, measured against the average density of our own universe (about 4 × 10⁻²⁸ kg per cubic metre, roughly one hydrogen atom in every 4 cubic metres).</p>
     </div>
@@ -341,6 +347,7 @@ footer { font-size: 14px; color: var(--muted); }
   <section class="stack">
     <div class="stack prose">
       <span class="eyebrow">Test 2 · the stacked-sheets version</span>
+      <span class="scale">Scale: one galaxy</span>
       <h2>What if the other universe is stacked under ours?</h2>
       <p>Now the neighbour isn't beside us on the sheet. It lies on a <span class="hid">second sheet</span> just beneath ours, separated by a gap in a hidden direction, like two pages in a book. Its matter clumps under our galaxies. We can't see that matter, but its gravity reaches across the gap. Stars orbiting in our galaxy now feel mass <em>inside</em> their orbit, which is what Test 1 showed is required.</p>
       <p>Set how far apart the sheets are, how much mass the hidden galaxy has, and how widely it is spread. Then check whether the purple curve can lie on the measured one.</p>
@@ -387,6 +394,7 @@ footer { font-size: 14px; color: var(--muted); }
   <section class="stack" id="formation">
     <div class="stack prose">
       <span class="eyebrow">Simulation 2 · two sheets forming galaxies</span>
+      <span class="scale">Scale: many galaxies inside one universe</span>
       <h2>Do our galaxies grow inside the hidden sheet's wells?</h2>
       <p>Test 2 only works if the hidden matter sits right under each galaxy, heavier and more spread out. This simulation checks whether that happens on its own. Both sheets start almost smooth, each with its own <em>independent</em> random lumps. The two sheets interact only through gravity across the gap: no collisions, no light. Any lining-up has to come from gravity alone.</p>
       <p>Our matter behaves like real gas: it can shed energy and sink to the centre of a well. You choose whether the <span class="hid">hidden matter</span> can do the same. Untick <strong>Gravity across the gap</strong> to run the control experiment.</p>
@@ -488,7 +496,8 @@ footer { font-size: 14px; color: var(--muted); }
         <span class="pill good">Testable prediction</span>
         <h3>Uneven pull on our edges</h3>
         <p>Neighbours close to some sides of our universe would stretch it more along one axis. On the sheet this gets stronger over time: as our universe expands and its centre weakens, we end up sitting inside our neighbours' wells, and they sit inside ours. That predicts expansion running slightly faster in some directions, and a matching distortion in the largest patterns of the cosmic microwave background (CMB).</p>
-        <p>There are disputed hints of this: the CMB "axis of evil", a claimed "dark flow" of galaxy clusters, and direction-dependent Hubble measurements. Your model predicts they all point the same way, which can be checked.</p>
+        <p>There are disputed hints of this: the CMB "axis of evil", a claimed "dark flow" of galaxy clusters, and direction-dependent Hubble measurements. A neighbour's tidal pull would stretch us along one axis, so these should share an axis.</p>
+        <p><strong>Checked against published directions:</strong> six anomaly axes (the excess radio and quasar dipole, the CosmicFlows-4 bulk flow, the X-ray cluster Hubble-rate anisotropy, the CMB power asymmetry, the axis of evil, and the dark flow) are no more lined up than random directions (p ≈ 0.5). The three motion anomalies do sit within about 20° of one axis at (l, b) ≈ (289°, 3°), but a group that tight shows up among six random axes about half the time. That axis is also near the Great Attractor, a known mass concentration. So the anomalies don't currently support one shared axis. A cleaner test would need each anomaly measured with matching methods.</p>
       </article>
       <article class="finding">
         <span class="pill warn">Plausible, not tested here</span>
@@ -849,7 +858,7 @@ function densityBangs() {
     let c = cells.get(key); if (!c) cells.set(key, (c = { idx: [], owners: new Map(), m: 0 }));
     c.idx.push(i); c.m += P.m[i]; c.owners.set(P.own[i], (c.owners.get(P.own[i]) || 0) + P.m[i]);
   }
-  sim.peak = 0;
+  sim.peak = cells.size ? 0 : null; // nothing counts while every universe is still young
   for (const c of cells.values()) {
     sim.peak = Math.max(sim.peak, c.m / sim.coreRef);
     if (c.m < thr || c.idx.length < 4 || sim.unis.size >= 50) continue;
@@ -982,7 +991,8 @@ function updateRings(dt) {
 function updateStats() {
   let total = 0; for (let i = 0; i < P.n; i++) total += P.m[i];
   $("sCount").textContent = sim.unis.size; $("sBangs").textContent = sim.bangs;
-  $("sPeak").textContent = sim.peak != null ? sim.peak.toFixed(2) + "×" : "–"; $("sMass").textContent = total.toFixed(1);
+  $("sPeak").textContent = sim.peak != null ? sim.peak.toFixed(2) + "×" : "–";
+  $("sTime").textContent = sim.t.toFixed(0); $("sMass").textContent = total.toFixed(1);
   const o = [...sim.unis.values()].find((u) => u.ours), tag = $("ourTag");
   if (!o || !o.outline) { $("sSize").textContent = "–"; $("sShape").textContent = "–"; $("sCore").textContent = "–"; tag.hidden = true; return; }
   if (!sim.our0) sim.our0 = { r: o.r, inner: o.inner };

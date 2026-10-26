@@ -34,6 +34,7 @@ Open `index.html` in a browser. It needs no build step. three.js loads from cdnj
   ours. "Find best fit" searches for the hidden mass and spread that best match the measured curve.
 
 `analysis/tidal_check.py` (needs numpy) runs the original far-neighbour test in SI units and prints the numbers.
+`analysis/anomaly_axes.py` (needs numpy) tests whether published cosmic anomaly directions share one axis.
 
 ## What the tests show so far
 
@@ -44,4 +45,4 @@ Open `index.html` in a browser. It needs no build step. three.js loads from cdnj
 | Stacked sheets explain dark matter | Can match the measured curve to within ~2 km/s, if the sheets are closer than ~10 kpc and the hidden galaxy is ~15–25× the visible mass and ~15× more spread out. That is a dark-matter halo on another sheet (brane-world "shadow matter"). |
 | Stacked sheets form on their own | Yes, in Simulation 2: the sheets line up (~0.9 vs ~0.02 in the control), hidden halos are several times wider than galaxies, and curves come out flatter (~0.8 vs ~0.47). Without the hidden sheet, no galaxies form at all in that time. |
 | Extreme density makes big bangs | Plausible behaviour on the sheet. Real searches look for bubble-collision marks in the CMB (none confirmed). |
-| Uneven pull on our edges | The testable part. It predicts direction-dependent expansion and aligned large-scale CMB anomalies. |
+| Uneven pull on our edges | Testable, but not supported yet. Six published anomaly axes are no more aligned than random (p ≈ 0.5). The bulk flow, Hubble-rate anisotropy and dark flow sit within ~20° of (l, b) ≈ (289°, 3°), but that grouping is consistent with chance and lies near the Great Attractor. |
