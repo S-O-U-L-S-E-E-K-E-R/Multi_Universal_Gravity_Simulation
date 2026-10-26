@@ -108,7 +108,9 @@ const TwoSheet = (() => {
     deposit(s.vis, s.rhoV, f.pxV, f.pyV); deposit(s.hid, s.rhoH);
     A.re.set(s.rhoV); A.im.fill(0); fft2(A.re, A.im, false);
     B.re.set(s.rhoH); B.im.fill(0); fft2(B.re, B.im, false);
-    s.ftV = A; s.ftH = B;
+    // keep this simulation's own copy: A and B are shared work buffers that wellField() also uses
+    if (!s.ftV) { s.ftV = { re: new Float64Array(N * N), im: new Float64Array(N * N) }; s.ftH = { re: new Float64Array(N * N), im: new Float64Array(N * N) }; }
+    s.ftV.re.set(A.re); s.ftV.im.set(A.im); s.ftH.re.set(B.re); s.ftH.im.set(B.im);
     conv(phi, A, s.kS); gradient(phi, f.vSelfX, f.vSelfY, o.G);                          // ordinary matter's own pull
     conv(phi, A, s.kS, o.cross ? B : null, s.kC); gradient(phi, f.vTotX, f.vTotY, o.G);   // + the hidden sheet across the gap
     conv(phi, B, s.kS, o.cross ? A : null, s.kC); gradient(phi, f.hTotX, f.hTotY, o.G);

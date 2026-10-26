@@ -9,6 +9,22 @@ The theory makes three claims:
 2. **Universes collide.** Marbles drift together into dense wells, and those wells become new big bangs. The result looks like a neural network or a wavy sea of high and low points.
 3. **Our edges are pulled unevenly**, because several neighbouring wells tug on different sides of our universe.
 
+## Where the theory stands
+
+| Claim | Status |
+| --- | --- |
+| Another universe's matter, mixed into our space and interacting only by gravity, is dark matter | Works: passes rotation curves (model and 149 real galaxies), clusters and the Bullet Cluster |
+| Our universe falling into a bigger well as a whole | Allowed at any strength, but undetectable from inside |
+| Neighbours' wells (from outside) as dark matter | Ruled out: averages to zero around a galaxy and is far too weak |
+| The stretch from a bigger well as the accelerating expansion | Ruled out by supernovae and by the CMB (needed stretch is 10⁴–10⁵× the allowed one) |
+| Big bangs at extreme density | Plausible (bounce / black-hole cosmology), untested |
+| Uneven edges, region-dependent cores | Hints only, not significant |
+
+**In what world it works:** our universe ignited inside a well of another universe's matter, which still fills our
+space as dark matter (about 5× ours, gravity-only, non-cooling); dark energy is the stretching of the sheet that
+carries all universes, not a slope; neighbours are far or light (one as heavy as ours more than ~19 of our radii
+away); and big bangs need extreme density to bounce instead of forming black holes.
+
 ## Run it
 
 Open `index.html` in a browser. It needs no build step. three.js loads from cdnjs.
@@ -71,7 +87,7 @@ far stricter still; falling into a bigger well as a whole remains undetectable f
 The page's third simulation puts our universe on the slope of one or two neighbours' wells (mass, distance, angle).
 From outside the whole universe slides toward the well; from inside only the uneven stretch shows. Turned around, the
 CMB caps how heavy a neighbour can be at each distance (`analysis/neighbour_limits.py`): a neighbour as heavy as our
-universe must be more than ~12 of our radii away, and at every distance the mass needed to replace dark energy is
+universe must be more than ~19 of our radii away, and at every distance the mass needed to replace dark energy is
 ~10⁴–10⁵ times what the CMB allows.
 
 ## Test suite result

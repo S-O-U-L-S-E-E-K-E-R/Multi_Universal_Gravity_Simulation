@@ -136,6 +136,15 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px s
 .finding p { font-size: 15.5px; }
 ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
 footer { font-size: 14px; color: var(--muted); }
+.part { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 40px; }
+.part-title { font-size: clamp(1.9rem, 4.6vw, 2.8rem); }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { font-family: var(--f-mono); font-size: 13px; color: var(--fg); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; background: var(--surface); }
+.toc a:hover, .toc a:focus-visible { border-color: var(--ours); color: var(--ours); }
+.finding a { color: var(--ours); }
+.finding ul { font-size: 15.5px; }
+footer h3 { color: var(--fg); }
+#world .findings, #details .findings { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
 .score-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .score { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; }
 .score th, .score td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -166,19 +175,53 @@ footer { font-size: 14px; color: var(--muted); }
 </style>
 
 <main>
+
   <header class="stack prose">
     <span class="eyebrow">A testable multiverse idea</span>
     <h1>Marbles on the Sheet</h1>
-    <p class="lede">Picture every universe as a marble resting on one shared sheet of space. We can't see past our own marble's edge, because light from beyond it never reaches us. But the pull of other marbles could still reach across the sheet into ours.</p>
-    <p>The theory makes three claims. This page simulates each one and checks it against real numbers.</p>
+    <p class="lede">Picture every universe as a marble resting on one shared sheet of space. Each marble dents the sheet with its own well. We can't see past our own marble's edge, because light from beyond it never reaches us, but other marbles' wells can still shape ours.</p>
+    <p>The theory, as it developed through these tests:</p>
     <ul>
-      <li><strong>Dark matter is other universes.</strong> The extra gravity we measure in galaxies comes from neighbouring marbles, not unseen particles.</li>
-      <li><strong>Extreme density makes big bangs.</strong> Wherever matter from the universes piles up densely enough, it ignites as a new universe.</li>
-      <li><strong>Our edges are pulled unevenly.</strong> Neighbours close to our edge tug harder on that side.</li>
+      <li><strong>Dark matter comes from other universes.</strong> The extra gravity in galaxies is other universes' matter, not unseen particles.</li>
+      <li><strong>Our universe formed in a gravity well</strong> and sits on the slope of bigger wells, which pull on it and stretch it unevenly.</li>
+      <li><strong>The accelerating expansion is that stretch.</strong> We're falling toward a well, so the near side runs ahead, like spaghetti.</li>
+      <li><strong>Extreme density makes big bangs.</strong> Wherever matter from the universes packs tightly enough, a new universe ignites.</li>
+      <li><strong>Universes are made of loose matter</strong>: dense at the centre, thin at the edges, always expanding, and reshaped by their neighbours.</li>
     </ul>
   </header>
 
-  <section class="stack">
+  <section class="stack" id="summary">
+    <div class="stack prose">
+      <span class="eyebrow">At a glance</span>
+      <h2>Where the theory stands</h2>
+      <p>Each claim was simulated and then checked against real measurements: 149 galaxy rotation curves, 1,309 exploding stars, galaxy clusters, the Bullet Cluster and the cosmic microwave background (CMB).</p>
+    </div>
+    <div class="findings">
+      <article class="finding"><span class="pill good">Works</span><h3>Another universe's matter, mixed into ours</h3><p>If our universe formed inside a neighbour's matter, and that matter only feels gravity, it gathers in our galaxies' wells and does dark matter's job. It passes rotation curves, real galaxies, clusters and the Bullet Cluster. <a href="#suite">Test suite</a> · <a href="#real">real galaxies</a></p></article>
+      <article class="finding"><span class="pill good">Allowed, can't be seen</span><h3>Falling into a bigger well as a whole</h3><p>A universe sliding down a slope as a whole feels nothing from inside, so this is allowed at any strength. Only the uneven part (stretching) can be measured. <a href="#slope">Simulation 3</a></p></article>
+      <article class="finding"><span class="pill bad">Ruled out</span><h3>Neighbours' wells as dark matter</h3><p>Pull from outside a galaxy pulls one side and pushes the other, averaging to zero. It's also hundreds of thousands of times too weak, even edge to edge. <a href="#test1">Test 1</a></p></article>
+      <article class="finding"><span class="pill bad">Ruled out</span><h3>The stretch as the accelerating expansion</h3><p>A stretch speeds up one axis and slows the others. Supernovae show acceleration in every direction, and the CMB caps any stretch 10,000–100,000 times below what's needed. Rotation doesn't rescue it. <a href="#tide">Supernova tests</a></p></article>
+      <article class="finding"><span class="pill warn">Plausible, untested</span><h3>Big bangs at extreme density</h3><p>Matches real ideas (universes born from collapsing matter that bounces back). The density needed is unknown, near the Planck density in current theories. <a href="#sheet">Simulation 1</a></p></article>
+      <article class="finding"><span class="pill warn">Hints only</span><h3>Uneven edges and local differences</h3><p>Published cosmic anomalies don't share one axis (p ≈ 0.5). Galaxies near each other have somewhat similar core sizes, but not significantly once distance is controlled (p = 0.11). <a href="#real">Real galaxies</a></p></article>
+    </div>
+    <nav class="toc" aria-label="Sections">
+      <a href="#part-model">1 · The multiverse model</a>
+      <a href="#part-dm">2 · Dark matter</a>
+      <a href="#part-de">3 · The accelerating expansion</a>
+      <a href="#world">4 · In what world would it work?</a>
+      <a href="#details">Details</a>
+    </nav>
+  </section>
+
+
+  <div class="part" id="part-model">
+    <span class="eyebrow">Part 1</span>
+    <h2 class="part-title">The multiverse model</h2>
+    <p class="prose">How universes behave on the sheet: loose matter that expands, reshapes, and sometimes ignites new big bangs; how a well flattens as a universe grows; and what sitting on a neighbour's slope does to us.</p>
+  </div>
+
+
+  <section class="stack" id="sheet">
     <div class="stack prose">
       <span class="eyebrow">Simulation 1 · the sheet</span>
       <span class="scale">Scale: whole universes</span>
@@ -242,7 +285,7 @@ footer { font-size: 14px; color: var(--muted); }
     </div>
   </section>
 
-  <section class="stack">
+  <section class="stack" id="well">
     <div class="stack prose">
       <span class="eyebrow">Well profile · one universe expanding</span>
       <span class="scale">Scale: one whole universe</span>
@@ -279,7 +322,104 @@ footer { font-size: 14px; color: var(--muted); }
     </div>
   </section>
 
-  <section class="stack">
+  <section class="stack" id="slope">
+    <div class="stack prose">
+      <span class="eyebrow">Simulation 3 · our universe on a slope</span>
+      <span class="scale">Scale: our whole universe and its neighbours</span>
+      <h2>Which neighbours could be pulling on us?</h2>
+      <p>Put a neighbour universe anywhere around ours: choose how heavy it is, how far away, and at what angle its well sits. Our universe sits on the slope of that well. Switch between two views. <strong>Outside</strong> shows the whole universe sliding toward the well. <strong>Inside</strong> shows what we could actually measure: the slide disappears (everything falls together) and only the uneven stretching is left.</p>
+      <p>The chart on the right turns it around: for each distance, the heaviest neighbour the CMB allows, and how heavy one would need to be to replace dark energy.</p>
+    </div>
+    <div class="panel">
+      <div class="viewport ts-view" id="slopeVp">
+        <canvas id="slopeCanvas" role="img" aria-label="Our universe as a cloud of matter on the slope of a neighbour universe's well, from outside or from inside"></canvas>
+        <div class="legend">
+          <div><i style="background:#3CC4C1"></i>our universe (stretch exaggerated)</div>
+          <div><i style="background:#E8963F"></i>neighbour universe's well</div>
+        </div>
+        <div class="vp-buttons">
+          <button id="slopeOutside" aria-pressed="false">Outside</button>
+          <button id="slopeInside" aria-pressed="true">Inside</button>
+        </div>
+      </div>
+      <div class="side">
+        <div class="stats">
+          <div class="stat"><b id="slNear">–</b><span>expansion change, near side</span></div>
+          <div class="stat"><b id="slFar">–</b><span>far side</span></div>
+          <div class="stat"><b id="slSide">–</b><span>at the sides</span></div>
+          <div class="stat"><b id="slCmb">–</b><span>CMB mark (seen: ~10⁻⁵)</span></div>
+        </div>
+        <h3>Neighbour 1</h3>
+        <div class="ctrl">
+          <label for="n1m">Mass <output id="n1mOut">1×</output></label>
+          <input type="range" id="n1m" min="-6" max="6" step="0.1" value="0">
+          <span class="hint">Compared with all the ordinary matter in our observable universe.</span>
+        </div>
+        <div class="ctrl">
+          <label for="n1d">Distance <output id="n1dOut">3× our radius</output></label>
+          <input type="range" id="n1d" min="0.04" max="3" step="0.01" value="0.477">
+          <span class="hint">In units of our observable universe's radius (46.5 billion light-years).</span>
+        </div>
+        <div class="ctrl">
+          <label for="n1a">Angle of its well <output id="n1aOut">0°</output></label>
+          <input type="range" id="n1a" min="0" max="359" step="1" value="0">
+        </div>
+        <label class="check"><input type="checkbox" id="n2on"> Add a second neighbour</label>
+        <div id="n2box" hidden>
+          <div class="ctrl">
+            <label for="n2m">Mass <output id="n2mOut">1×</output></label>
+            <input type="range" id="n2m" min="-6" max="6" step="0.1" value="0">
+          </div>
+          <div class="ctrl">
+            <label for="n2d">Distance <output id="n2dOut">3× our radius</output></label>
+            <input type="range" id="n2d" min="0.04" max="3" step="0.01" value="0.477">
+          </div>
+          <div class="ctrl">
+            <label for="n2a">Angle <output id="n2aOut">120°</output></label>
+            <input type="range" id="n2a" min="0" max="359" step="1" value="120">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="test">
+      <div class="chart-wrap">
+        <div class="ts-charts">
+          <div class="stack" style="gap:6px;min-width:0">
+            <h3>Expansion change by direction, seen from inside</h3>
+            <canvas class="chart small" id="polarChart" role="img" aria-label="How much faster or slower the expansion runs in each direction, as measured from inside our universe"></canvas>
+          </div>
+          <div class="stack" style="gap:6px;min-width:0">
+            <h3>Which neighbours are allowed</h3>
+            <canvas class="chart small" id="allowChart" role="img" aria-label="Neighbour mass against distance: the region the CMB allows, and the mass needed to replace dark energy"></canvas>
+          </div>
+        </div>
+        <div class="keys">
+          <span class="k-ext">faster (outward) / slower (inward) than average, by direction</span>
+          <span class="k-ok">allowed by the CMB</span>
+          <span class="k-need k-dash">needed to replace dark energy</span>
+        </div>
+      </div>
+      <div class="side">
+        <h3>Readings</h3>
+        <div class="readout">
+          <div class="line"><span>Pull on us as a whole (can't be felt)</span><span id="slFall">–</span></div>
+          <div class="line"><span>Near side vs far side</span><span id="slLop">–</span></div>
+          <div class="line"><span>Share of the measured acceleration</span><span id="slDe">–</span></div>
+          <div class="line"><span>Heaviest neighbour the CMB allows here</span><span id="slMax">–</span></div>
+        </div>
+        <div class="verdict" id="slVerdict">–</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="part" id="part-dm">
+    <span class="eyebrow">Part 2</span>
+    <h2 class="part-title">Dark matter</h2>
+    <p class="prose">Can other universes supply the missing pull in galaxies? From neighbours beside us, to neighbours overlapping us, to a neighbour's matter mixed into our space, tested on model galaxies and on 149 real ones.</p>
+  </div>
+
+
+  <section class="stack" id="test1">
     <div class="stack prose">
       <span class="eyebrow">Test 1 · the dark-matter claim, edges close together</span>
       <span class="scale">Scale: one galaxy, neighbours at universe scale</span>
@@ -330,7 +470,7 @@ footer { font-size: 14px; color: var(--muted); }
     </div>
   </section>
 
-  <section class="stack">
+  <section class="stack" id="test1b">
     <div class="stack prose">
       <span class="eyebrow">Test 1b · an expanded neighbour overlapping us</span>
       <span class="scale">Scale: one galaxy</span>
@@ -367,7 +507,7 @@ footer { font-size: 14px; color: var(--muted); }
     </div>
   </section>
 
-  <section class="stack">
+  <section class="stack" id="test2">
     <div class="stack prose">
       <span class="eyebrow">Test 2 · a neighbour's matter inside our galaxy</span>
       <span class="scale">Scale: one galaxy</span>
@@ -433,7 +573,7 @@ footer { font-size: 14px; color: var(--muted); }
         <div class="vp-buttons">
           <button id="tsBoth" aria-pressed="true">Both</button>
           <button id="tsOurs" aria-pressed="false">Ours</button>
-          <button id="tsHid" aria-pressed="false">Hidden</button>
+          <button id="tsHid" aria-pressed="false">Neighbour</button>
         </div>
       </div>
       <div class="side">
@@ -540,7 +680,7 @@ footer { font-size: 14px; color: var(--muted); }
 
   <section class="stack" id="real">
     <div class="stack prose">
-      <span class="eyebrow">Digging in · real galaxies</span>
+      <span class="eyebrow">Real galaxies</span>
       <span class="scale">Scale: 149 measured galaxies</span>
       <h2>Testing the neighbour's matter on real rotation curves</h2>
       <p>The test suite used model galaxies. This section uses the real thing: the SPARC catalogue (Lelli, McGaugh &amp; Schombert 2016) of measured rotation curves, 149 galaxies and 3,150 measurements after the standard quality cuts. Each version gets one set of settings for every galaxy, so it has to predict each galaxy's curve from its visible matter alone.</p>
@@ -594,9 +734,16 @@ footer { font-size: 14px; color: var(--muted); }
     </div>
   </section>
 
+  <div class="part" id="part-de">
+    <span class="eyebrow">Part 3</span>
+    <h2 class="part-title">The accelerating expansion</h2>
+    <p class="prose">Is the universe speeding apart because we're sliding down a bigger well? Tested on 1,309 exploding stars across the sky, with a lopsided pull, rotation and our own motion included.</p>
+  </div>
+
+
   <section class="stack" id="tide">
     <div class="stack prose">
-      <span class="eyebrow">Digging in · the accelerating expansion</span>
+      <span class="eyebrow">Supernova tests</span>
       <span class="scale">Scale: our whole observable universe</span>
       <h2>Is the expansion speeding up because we're sliding down a bigger well?</h2>
       <p>The idea: our universe sits on the slope of a bigger well. The side nearer the well falls faster than the far side, so the universe is stretched like spaghetti, and from the middle it looks as if everything is speeding apart. That would replace "dark energy".</p>
@@ -644,100 +791,38 @@ footer { font-size: 14px; color: var(--muted); }
     </div>
   </section>
 
-  <section class="stack" id="slope">
+  <section class="stack" id="world">
     <div class="stack prose">
-      <span class="eyebrow">Simulation 3 · our universe on a slope</span>
-      <span class="scale">Scale: our whole universe and its neighbours</span>
-      <h2>Which neighbours could be pulling on us?</h2>
-      <p>Put a neighbour universe anywhere around ours: choose how heavy it is, how far away, and at what angle its well sits. Our universe sits on the slope of that well. Switch between two views. <strong>Outside</strong> shows the whole universe sliding toward the well. <strong>Inside</strong> shows what we could actually measure: the slide disappears (everything falls together) and only the uneven stretching is left.</p>
-      <p>The chart on the right turns it around: for each distance, the heaviest neighbour the CMB allows, and how heavy one would need to be to replace dark energy.</p>
+      <span class="eyebrow">Part 4</span>
+      <h2 class="part-title">In what world would this multiverse work?</h2>
+      <p>Every failure above came from the same rule: gravity from mass <em>outside</em> a region can reshape it, but can't add a pull or push that's the same in every direction. So each part of the theory works only in a world where the effect comes from <em>inside</em> our universe, or from the sheet itself, not from neighbours' slopes.</p>
     </div>
-    <div class="panel">
-      <div class="viewport ts-view" id="slopeVp">
-        <canvas id="slopeCanvas" role="img" aria-label="Our universe as a cloud of matter on the slope of a neighbour universe's well, from outside or from inside"></canvas>
-        <div class="legend">
-          <div><i style="background:#3CC4C1"></i>our universe (stretch exaggerated)</div>
-          <div><i style="background:#E8963F"></i>neighbour universe's well</div>
-        </div>
-        <div class="vp-buttons">
-          <button id="slopeOutside" aria-pressed="false">Outside</button>
-          <button id="slopeInside" aria-pressed="true">Inside</button>
-        </div>
-      </div>
-      <div class="side">
-        <div class="stats">
-          <div class="stat"><b id="slNear">–</b><span>expansion change, near side</span></div>
-          <div class="stat"><b id="slFar">–</b><span>far side</span></div>
-          <div class="stat"><b id="slSide">–</b><span>at the sides</span></div>
-          <div class="stat"><b id="slCmb">–</b><span>CMB mark (seen: ~10⁻⁵)</span></div>
-        </div>
-        <h3>Neighbour 1</h3>
-        <div class="ctrl">
-          <label for="n1m">Mass <output id="n1mOut">1×</output></label>
-          <input type="range" id="n1m" min="-6" max="6" step="0.1" value="0">
-          <span class="hint">Compared with all the ordinary matter in our observable universe.</span>
-        </div>
-        <div class="ctrl">
-          <label for="n1d">Distance <output id="n1dOut">3× our radius</output></label>
-          <input type="range" id="n1d" min="0.04" max="3" step="0.01" value="0.477">
-          <span class="hint">In units of our observable universe's radius (46.5 billion light-years).</span>
-        </div>
-        <div class="ctrl">
-          <label for="n1a">Angle of its well <output id="n1aOut">0°</output></label>
-          <input type="range" id="n1a" min="0" max="359" step="1" value="0">
-        </div>
-        <label class="check"><input type="checkbox" id="n2on"> Add a second neighbour</label>
-        <div id="n2box" hidden>
-          <div class="ctrl">
-            <label for="n2m">Mass <output id="n2mOut">1×</output></label>
-            <input type="range" id="n2m" min="-6" max="6" step="0.1" value="0">
-          </div>
-          <div class="ctrl">
-            <label for="n2d">Distance <output id="n2dOut">3× our radius</output></label>
-            <input type="range" id="n2d" min="0.04" max="3" step="0.01" value="0.477">
-          </div>
-          <div class="ctrl">
-            <label for="n2a">Angle <output id="n2aOut">120°</output></label>
-            <input type="range" id="n2a" min="0" max="359" step="1" value="120">
-          </div>
-        </div>
-      </div>
+    <div class="findings">
+      <article class="finding"><span class="pill good">Consistent with every test here</span><h3>Dark matter: our big bang happened inside a neighbour's matter</h3>
+        <p>This works in a world where:</p>
+        <ul>
+          <li>Our universe ignited at the bottom of a well made of another universe's matter, so that matter has filled our whole observable universe since the first moment. The CMB needs dark matter present from the start, in every direction.</li>
+          <li>There is about 5 times as much of it as our ordinary matter.</li>
+          <li>It interacts only through gravity: no light, no collisions, and it can't cool and sink like gas.</li>
+          <li>Star explosions blow gas out of small galaxies (my simulation didn't produce this on its own, but astronomers see it happen).</li>
+        </ul>
+        <p>Its own testable twist: if the neighbour's matter is spread like a "wavy sea", galaxy core sizes should vary by region. Larger rotation-curve surveys (such as WALLABY) can test that.</p></article>
+      <article class="finding"><span class="pill warn">Possible, but a different mechanism</span><h3>Accelerating expansion: the sheet itself stretches</h3>
+        <p>A slope can't do it. But if the sheet of space that all the marbles sit on is itself expanding, like rising dough, every universe on it is carried apart evenly in all directions. That is what dark energy looks like, and it fits the supernovae.</p>
+        <p>In this world, dark energy is the multiverse sheet's own stretching. If that stretching changes over time, it could connect to the 2025 DESI hints that dark energy is weakening. That's untested here.</p></article>
+      <article class="finding"><span class="pill good">Allowed with limits</span><h3>Neighbours: far away, or light</h3>
+        <p>Neighbours and their wells can exist. The CMB only limits their uneven pull: a neighbour as heavy as our universe must be more than about 19 of our universe's radii away (roughly 900 billion light-years), and heavier ones farther (the limit grows with distance cubed). Their gentle pull could still cause small effects, like the bulk flow of nearby galaxies.</p></article>
+      <article class="finding"><span class="pill warn">Needs new physics</span><h3>Big bangs: extreme density bounces</h3>
+        <p>Ordinary gravity turns extreme density into a black hole, not a new universe. This part works in a world where collapse bounces at extreme density, as in loop quantum cosmology (about 0.41 × the Planck density, around 10⁹⁶ kg/m³) or in "universes born inside black holes" ideas. Testable marks: round collision scars on the CMB, and galaxies spinning more one way than the other.</p></article>
     </div>
-    <div class="test">
-      <div class="chart-wrap">
-        <div class="ts-charts">
-          <div class="stack" style="gap:6px;min-width:0">
-            <h3>Expansion change by direction, seen from inside</h3>
-            <canvas class="chart small" id="polarChart" role="img" aria-label="How much faster or slower the expansion runs in each direction, as measured from inside our universe"></canvas>
-          </div>
-          <div class="stack" style="gap:6px;min-width:0">
-            <h3>Which neighbours are allowed</h3>
-            <canvas class="chart small" id="allowChart" role="img" aria-label="Neighbour mass against distance: the region the CMB allows, and the mass needed to replace dark energy"></canvas>
-          </div>
-        </div>
-        <div class="keys">
-          <span class="k-ext">faster (outward) / slower (inward) than average, by direction</span>
-          <span class="k-ok">allowed by the CMB</span>
-          <span class="k-need k-dash">needed to replace dark energy</span>
-        </div>
-      </div>
-      <div class="side">
-        <h3>Readings</h3>
-        <div class="readout">
-          <div class="line"><span>Pull on us as a whole (can't be felt)</span><span id="slFall">–</span></div>
-          <div class="line"><span>Near side vs far side</span><span id="slLop">–</span></div>
-          <div class="line"><span>Share of the measured acceleration</span><span id="slDe">–</span></div>
-          <div class="line"><span>Heaviest neighbour the CMB allows here</span><span id="slMax">–</span></div>
-        </div>
-        <div class="verdict" id="slVerdict">–</div>
-      </div>
-    </div>
+    <div class="verdict good" style="max-width:66ch"><strong>The theory in one sentence, as the evidence allows it:</strong> our universe ignited inside a well of another universe's matter, which still fills our space and acts as dark matter, while the sheet of space carrying all universes slowly stretches (dark energy) and distant neighbours tug on us too gently to see except as small oddities.</div>
   </section>
 
-  <section class="stack">
+
+  <section class="stack" id="details">
     <div class="stack prose">
-      <span class="eyebrow">What the simulation says</span>
-      <h2>Results, claim by claim</h2>
+      <span class="eyebrow">Details</span>
+      <h2>Every claim, in more detail</h2>
     </div>
     <div class="findings">
       <article class="finding">
@@ -774,8 +859,12 @@ footer { font-size: 14px; color: var(--muted); }
   </section>
 
   <footer class="prose stack">
-    <p>How it works: Simulation 1 uses softened Newtonian gravity on a wrap-around sheet in made-up units, so it shows behaviour, not real scales. The tests use real SI values. The galaxy has 6 × 10¹⁰ solar masses of visible matter (Hernquist profile, 3 kpc scale). In Test 1 each universe is a flat disc of 1,200 mass points, and the gravity reach uses a Yukawa fall-off. In Test 2 the neighbour-matter cloud is a Hernquist sphere whose pull is softened inside the core size. Simulation 2 is a particle-mesh simulation: 3,136 particles each of our matter and the neighbour's matter on a 128 × 128 wrap-around grid, with softened gravity between all of them (the offset setting keeps the two kinds slightly apart, which softens their pull on each other at short range). Expansion is modelled with expanding-space equations, and gas cooling as friction against the local flow. It runs in made-up units, and anything smaller than about one grid cell isn't resolved. The "measured" curve is a stylised spiral-galaxy curve that flattens near 200 km/s, not a specific dataset.</p>
+    <h3>How it works</h3>
+    <p><strong>Simulation 1</strong> moves every universe's matter as free particles under particle-mesh gravity (FFT on a 128 × 128 wrap-around grid) in made-up units, so it shows behaviour, not real scales. <strong>Simulation 2</strong> uses the same method with 3,136 particles each of our matter and a neighbour's matter in expanding space, with gas cooling modelled as friction against the local flow; anything smaller than about one grid cell isn't resolved. <strong>Simulation 3</strong> computes the exact pull of one or two neighbours across our observable universe (radius 46.5 billion light-years) in SI units; its CMB mark is an order-of-magnitude Sachs–Wolfe estimate.</p>
+    <p><strong>Tests 1, 1b and 2</strong> use a galaxy with 6 × 10¹⁰ solar masses of visible matter (Hernquist profile, 3 kpc scale) against a stylised spiral-galaxy curve that flattens near 200 km/s. The <strong>test suite</strong> fits each version on the radial acceleration relation and reuses those settings for every other test. The <strong>real-galaxy</strong> section uses SPARC (Lelli, McGaugh &amp; Schombert 2016); the <strong>supernova</strong> section uses Pantheon+ (Scolnic et al. 2022) with each supernova's own error bar. All analysis scripts are in the GitHub repository.</p>
   </footer>
+
+
 </main>
 
 <script type="application/json" id="sparcData">{"scan":[[0,0.2154],[0.25,0.2124],[0.5,0.2071],[0.75,0.202],[1,0.1967],[1.5,0.1885],[2,0.1823],[3,0.1816],[4,0.1914],[6,0.2221],[8,0.2519]],"pts":[[0.61,2.5,1.0,4.0,"D564-8"],[0.7,8.0,6.0,8.0,"D631-7"],[0.69,2.0,0.5,3.0,"DDO064"],[0.37,4.0,2.0,4.0,"DDO154"],[1.02,4.0,3.0,5.0,"DDO168"],[5.08,10.0,8.0,10.0,"ESO079-G014"],[1.51,5.0,3.0,6.0,"ESO116-G012"],[0.46,0.5,0.5,0.5,"ESO444-G084"],[5.45,10.0,8.0,10.0,"ESO563-G021"],[4.99,8.0,5.0,8.0,"F568-3"],[3.56,10.0,8.0,10.0,"F571-8"],[4.46,3.0,2.0,5.0,"F574-1"],[2.36,4.0,4.0,6.0,"F583-1"],[1.93,0.5,0.0,1.0,"F583-4"],[1.34,3.0,2.0,5.0,"KK98-251"],[1.34,0.5,0.5,0.5,"NGC0024"],[6.11,8.0,6.0,8.0,"NGC0055"],[3.74,0.5,0.0,1.0,"NGC0247"],[1.75,1.5,1.0,3.0,"NGC0300"],[3.53,4.0,3.0,5.0,"NGC1090"],[1.39,0.0,0.0,0.0,"NGC2403"],[3.64,1.5,0.0,3.0,"NGC2841"],[2.33,2.0,2.0,2.5,"NGC2903"],[0.55,2.5,1.0,3.0,"NGC2915"],[6.2,0.0,0.0,0.0,"NGC2998"],[1.56,4.0,3.0,5.0,"NGC3109"],[3.14,2.5,2.5,3.0,"NGC3198"],[2.4,0.0,0.0,0.5,"NGC3521"],[0.2,2.0,2.0,2.0,"NGC3741"],[2.53,4.0,4.0,4.0,"NGC3877"],[2.63,6.0,6.0,6.0,"NGC3917"],[2.18,1.5,1.5,3.0,"NGC3972"],[2.15,5.0,4.0,5.0,"NGC4100"],[2.79,0.5,0.0,1.5,"NGC4183"],[1.53,8.0,6.0,8.0,"NGC5585"],[5.34,0.0,0.0,1.0,"NGC5907"],[7.01,2.0,2.0,2.5,"NGC5985"],[2.3,0.5,0.5,0.5,"NGC6015"],[2.16,0.0,0.0,0.5,"NGC6503"],[6.04,0.0,0.0,3.0,"NGC6674"],[2.44,1.0,0.0,1.0,"NGC6946"],[1.21,5.0,4.0,6.0,"NGC7793"],[5.95,1.0,0.0,2.5,"UGC00128"],[1.58,1.5,1.0,1.5,"UGC00191"],[2.3,1.0,0.0,1.0,"UGC00731"],[1.63,4.0,2.5,4.0,"UGC01281"],[1.62,0.5,0.0,0.5,"UGC02259"],[6.15,10.0,10.0,10.0,"UGC02916"],[3.55,0.0,0.0,0.0,"UGC02953"],[3.19,0.5,0.0,0.5,"UGC03205"],[3.79,1.0,0.0,2.0,"UGC03546"],[2.43,5.0,4.0,5.0,"UGC03580"],[1.86,1.5,1.0,2.0,"UGC04325"],[0.18,0.5,0.5,1.0,"UGC04483"],[1.73,2.5,1.0,4.0,"UGC04499"],[1.14,0.0,0.0,1.0,"UGC05716"],[0.38,1.5,1.5,1.5,"UGC05721"],[1.17,1.0,1.0,1.0,"UGC05764"],[1.99,1.0,0.0,2.0,"UGC05829"],[1.66,1.0,0.0,2.0,"UGC05918"],[1.67,4.0,4.0,5.0,"UGC05986"],[1.49,0.5,0.0,1.0,"UGC06446"],[5.15,2.5,1.5,4.0,"UGC06667"],[3.6,0.0,0.0,2.5,"UGC06786"],[5.37,0.0,0.0,1.5,"UGC06787"],[3.21,2.0,1.0,4.0,"UGC06983"],[1.25,1.5,1.0,3.0,"UGC07151"],[1.2,0.0,0.0,1.0,"UGC07261"],[1.64,1.0,0.5,1.0,"UGC07399"],[3.46,2.0,2.0,3.0,"UGC07524"],[0.53,2.0,1.0,2.5,"UGC07603"],[0.57,1.0,0.0,2.0,"UGC07690"],[0.61,0.5,0.0,2.5,"UGC07866"],[1.05,1.0,1.0,1.0,"UGC08286"],[0.67,0.0,0.0,0.0,"UGC08490"],[0.45,0.5,0.0,0.5,"UGC08550"],[3.09,0.0,0.0,2.0,"UGC08699"],[6.97,4.0,4.0,5.0,"UGC09133"],[1.04,0.0,0.0,1.5,"UGC09992"],[1.8,2.5,0.5,3.0,"UGC10310"],[5.93,6.0,6.0,6.0,"UGC11455"],[2.08,0.0,0.0,0.0,"UGC11820"],[2.44,0.0,0.0,0.5,"UGC11914"],[7.38,0.0,0.0,0.5,"UGC12506"],[2.42,2.0,1.0,3.0,"UGC12632"],[1.98,0.5,0.0,1.0,"UGC12732"],[1.18,1.5,1.0,2.5,"UGCA442"],[0.83,0.5,0.5,0.5,"UGCA444"]],"fit":[0.19753011763963316,0.3572176066164649],"n":149,"table":[["N","Visible matter only",0.565,0.0],["E2","Gravity leaks into the sheet below a fixed acceleration",0.167,0.46],["Db","Neighbour matter in our wells, no core",0.215,0.25],["Dgap","Neighbour matter in our wells, 3 kpc core",0.182,0.32]]}</script>
@@ -893,7 +982,9 @@ const TwoSheet = (() => {
     deposit(s.vis, s.rhoV, f.pxV, f.pyV); deposit(s.hid, s.rhoH);
     A.re.set(s.rhoV); A.im.fill(0); fft2(A.re, A.im, false);
     B.re.set(s.rhoH); B.im.fill(0); fft2(B.re, B.im, false);
-    s.ftV = A; s.ftH = B;
+    // keep this simulation's own copy: A and B are shared work buffers that wellField() also uses
+    if (!s.ftV) { s.ftV = { re: new Float64Array(N * N), im: new Float64Array(N * N) }; s.ftH = { re: new Float64Array(N * N), im: new Float64Array(N * N) }; }
+    s.ftV.re.set(A.re); s.ftV.im.set(A.im); s.ftH.re.set(B.re); s.ftH.im.set(B.im);
     conv(phi, A, s.kS); gradient(phi, f.vSelfX, f.vSelfY, o.G);                          // ordinary matter's own pull
     conv(phi, A, s.kS, o.cross ? B : null, s.kC); gradient(phi, f.vTotX, f.vTotY, o.G);   // + the hidden sheet across the gap
     conv(phi, B, s.kS, o.cross ? A : null, s.kC); gradient(phi, f.hTotX, f.hTotY, o.G);
@@ -1298,7 +1389,8 @@ function placeCamera() {
 function resize() { const w = vp.clientWidth, h = vp.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 function reset() {
   for (const u of [...sim.unis.values()]) removeUni(u);
-  for (const R of sim.rings) scene.remove(R.mesh);
+  for (const R of sim.rings) { scene.remove(R.mesh); R.mesh.geometry.dispose(); R.mesh.material.dispose(); }
+  sim.peak = null;
   sim.rings = []; sim.bangs = 0; sim.t = 0; P.n = 0; sim.our0 = null; sim.coreAvg = null;
   bigBang(GN / 2, GN / 2, 1, { ours: true });
   { let m = 0; for (let i = 0; i < P.n; i++) if (Math.hypot(md(P.x[i] - GN / 2), md(P.y[i] - GN / 2)) < 1.13) m += P.m[i]; sim.coreRef = m; } // mass in one patch at a newborn's core
@@ -1329,7 +1421,10 @@ function wireSheetUI() {
   bindOut("spd", (v) => v.toFixed(1) + "×");
   $("pause").textContent = sim.running ? "Pause" : "Play";
   $("pause").onclick = () => { sim.running = !sim.running; $("pause").textContent = sim.running ? "Pause" : "Play"; };
-  $("drop").onclick = () => { const [x, y] = freeSpot(); bigBang(x, y, 1, { flash: true }); logEvent("You added a new universe (+1.0 mass)."); };
+  $("drop").onclick = () => {
+    if (P.n + PER_UNI > MAXP) { logEvent("The sheet is full: no room for another universe. Press Reset to start over."); return; }
+    const [x, y] = freeSpot(); bigBang(x, y, 1, { flash: true }); logEvent("You added a new universe (+1.0 mass).");
+  };
   $("reset").onclick = reset;
   $("viewBtn").onclick = () => {
     sim.flat = !sim.flat;
@@ -1464,7 +1559,7 @@ function drawMap() {
   });
   g.font = `11px ${css("--f-mono")}`; g.fillStyle = "#9FB0C8"; g.textAlign = "left"; g.textBaseline = "top";
   g.fillText("our universe (teal) · neighbours (orange)", 10, 10);
-  g.fillText("galaxy colour: grey = no help  →  bright = all missing pull", 10, 26);
+  g.fillText(W < 520 ? "grey = no help → bright = all the pull" : "galaxy colour: grey = no help  →  bright = all missing pull", 10, 26);
 }
 function drawTest1() {
   computeTest1(); drawMap();
@@ -1485,13 +1580,13 @@ function drawTest1() {
   const bestAll = Math.max(...test1.gal.map((q) => q.best)) / NEED30, ratio = p.best / NEED30, v = $("verdict");
   if (ratio < 0.01) {
     v.className = "verdict";
-    v.textContent = `Far too weak. This galaxy gets ${ratio <= 0 ? "no inward help at all" : "about 1 / " + Math.round(1 / ratio).toLocaleString() + " of its missing pull"} (best galaxy on the map: ${bestAll <= 0 ? "none" : "1 / " + Math.round(1 / bestAll).toLocaleString()}).${test1.lam !== Infinity ? " With a reach limit the average pull points outward, which makes it worse." : ""}`;
+    v.textContent = `Far too weak. This galaxy gets ${ratio <= 0 ? "no inward help at all" : "about 1 / " + (1 / ratio >= 1e6 ? fmtSci(1 / ratio) : Math.round(1 / ratio).toLocaleString()) + " of its missing pull"} (best galaxy on the map: ${bestAll <= 0 ? "none" : "1 / " + (1 / bestAll >= 1e6 ? fmtSci(1 / bestAll) : Math.round(1 / bestAll).toLocaleString())}).${test1.lam !== Infinity ? " With a reach limit the average pull points outward, which makes it worse." : ""}`;
   } else if (ratio < 0.5) {
     v.className = "verdict warn";
     v.textContent = `Noticeable (${(ratio * 100).toFixed(0)}% in the best direction), but only with neighbours ${fmtSci(10 ** +$("mExt").value)} times heavier than our universe, and the pull is lopsided: one axis pulled in, the other pushed out.`;
   } else {
     v.className = "verdict";
-    v.textContent = `Strong enough on one axis, but it tears the galaxy. The other axis is flung outward (${fmtA(p.worst)}), and galaxies near the neighbours get it far worse than those in the middle. Real galaxies all show flat curves in every direction.`;
+    v.textContent = `Strong enough on one axis, but it tears the galaxy. The other axis is flung outward (${fmtA(-p.worst)}), and galaxies near the neighbours get it far worse than those in the middle. Real galaxies all show flat curves in every direction.`;
   }
 }
 bindOut("gap", (v) => v + " Gly", drawTest1);
@@ -1559,8 +1654,8 @@ const W_FAR = 9, W_XMAX = 12;
 const wPot = (r, R) => -1 / Math.sqrt(r * r + (R / 2) ** 2);
 const wPull = (r, R) => r / (r * r + (R / 2) ** 2) ** 1.5;
 const wPeak = (R) => wPull((R / 2) / Math.SQRT2, R);
-function drawWell() {
-  const R = +$("wExp").value, cv = $("wellChart");
+function drawWell(size) {
+  const R = typeof size === "number" ? size : +$("wExp").value, cv = $("wellChart");
   $("wExpOut").textContent = R.toFixed(1) + "×";
   const dpr = Math.min(window.devicePixelRatio || 1, 2), W = cv.clientWidth, H = cv.clientHeight;
   cv.width = W * dpr; cv.height = H * dpr;
@@ -1620,10 +1715,10 @@ $("wPlay").onclick = () => {
   if (wAnim) return wStop();
   if (+$("wExp").value >= 9.95) $("wExp").value = 1;
   $("wPlay").textContent = "Pause";
-  let lastT = performance.now();
+  let lastT = performance.now(), size = +$("wExp").value;
   const tick = (t) => {
-    const el = $("wExp"), next = Math.min(10, +el.value * Math.pow(1.35, (t - lastT) / 1000)); lastT = t;
-    el.value = next; drawWell();
+    const el = $("wExp"), next = Math.min(10, size * Math.pow(1.35, (t - lastT) / 1000)); lastT = t; size = next;
+    el.value = next; drawWell(next);
     if (next >= 10) return wStop();
     wAnim = requestAnimationFrame(tick);
   };
@@ -1656,9 +1751,9 @@ $("oReset").onclick = () => { $("oDen").value = 0; drawOverlap(); };
 
 /* ================= Simulation 2: two sheets forming galaxies ================= */
 const TSN = TwoSheet.N, TS_DT = 0.05, TS_END = 30;
-const ts = { sim: null, running: true, visible: false, view: "both", hist: [], meas: null, rot: null, steps: 0 };
+const ts = { sim: null, running: !reduceMotion, visible: false, view: "both", hist: [], meas: null, rot: null, steps: 0 };
 function tsOpts() { return { hiddenMass: +$("tsMass").value, gap: +$("tsGap").value, cross: $("tsCross").checked, coolHidden: $("tsCool").checked ? 2 : 0, seed: 1 + Math.floor(Math.random() * 1000) }; }
-function tsRestart() { ts.sim = TwoSheet.create(tsOpts()); ts.hist = []; ts.meas = null; ts.rot = null; ts.steps = 0; tsMeasure(); tsDraw(); tsCharts(); }
+function tsRestart() { if ($("tsPause").textContent === "Finished") $("tsPause").textContent = ts.running ? "Pause" : "Play"; ts.sim = TwoSheet.create(tsOpts()); ts.hist = []; ts.meas = null; ts.rot = null; ts.steps = 0; tsMeasure(); tsDraw(); tsCharts(); }
 function tsMeasure() {
   const m = TwoSheet.measure(ts.sim);
   ts.meas = m; ts.hist.push([m.t, m.alignment]);
@@ -1680,7 +1775,8 @@ function tsMeasure() {
   $("tsrMass").textContent = formed ? massRatio.toFixed(1) + "×" : "–";
   $("tsrFlat").textContent = flat ? `${flat.tot.toFixed(2)} (ours alone ${flat.self.toFixed(2)})` : "–";
   const v = $("tsVerdict"), al = m.alignment;
-  if (!formed) { v.className = "verdict warn"; v.textContent = m.t < 9 ? "Lumps are growing in both kinds of matter. Galaxies form after about time 10." : "No compact galaxies yet. With a large offset or little neighbour matter, this takes longer or doesn't happen."; }
+  if (!ts.sim.o.cross && m.t >= 9) { v.className = "verdict warn"; v.textContent = `Control run: with no gravity between them, the two kinds of matter stay unrelated (lined up ${al.toFixed(2)})${formed ? "" : " and our matter alone is too thin to form galaxies"}. So the lining-up in the real runs comes from gravity between them.`; }
+  else if (!formed) { v.className = "verdict warn"; v.textContent = m.t < 9 ? "Lumps are growing in both kinds of matter. Galaxies form after about time 10." : "No compact galaxies yet. With a large offset or little neighbour matter, this takes longer or doesn't happen."; }
   else if (!ts.sim.o.cross) { v.className = "verdict warn"; v.textContent = `Control run: with no gravity between them, the two kinds of matter stay unrelated (lined up ${al.toFixed(2)}). The neighbour matter around each galaxy is just whatever happens to be there, so any alignment in the real runs comes from gravity.`; }
   else if (al > 0.7 && sizeRatio > 2 && flat && flat.tot > flat.self + 0.1) { v.className = "verdict good"; v.textContent = `Yes. The two kinds of matter lined up (${al.toFixed(2)}) from unrelated starting lumps. Each galaxy sits at the centre of a cloud of neighbour matter about ${sizeRatio >= 10 ? "10 or more" : sizeRatio.toFixed(0)} times wider, holding ${massRatio.toFixed(1)}× its mass, and the rotation curve is flatter (${flat.tot.toFixed(2)} vs ${flat.self.toFixed(2)} for our matter alone).`; }
   else if (al > 0.7) { v.className = "verdict warn"; v.textContent = `They lined up (${al.toFixed(2)}), but the neighbour clouds are ${sizeRatio < 2 ? "almost as compact as the galaxies" : "not adding much"}, so the curve is only ${flat ? flat.tot.toFixed(2) : "–"} flat (${flat ? flat.self.toFixed(2) : "–"} without them).${ts.sim.o.coolHidden ? " Neighbour matter that cools collapses like ours instead of forming a wide cloud." : " Try more neighbour matter."}`; }
@@ -1750,7 +1846,7 @@ $("tsPause").onclick = () => { if (ts.sim.t >= TS_END) { tsRestart(); ts.running
 $("tsReset").onclick = () => { tsRestart(); ts.running = true; $("tsPause").textContent = "Pause"; };
 new IntersectionObserver((es) => { ts.visible = es.some((e) => e.isIntersecting); }, { threshold: 0.05 }).observe($("formation"));
 new ResizeObserver(() => tsDraw()).observe(tsCanvas);
-tsRestart(); requestAnimationFrame(tsLoop);
+tsRestart(); $("tsPause").textContent = ts.running ? "Pause" : "Play"; requestAnimationFrame(tsLoop);
 
 /* ================= Test suite: scorecard and rotation chart ================= */
 const DM = JSON.parse($("dmData").textContent);
@@ -1902,7 +1998,7 @@ function slEffects(nbs) {
       const dx = P[0] - x[0], dy = P[1] - x[1], dz = P[2] - x[2], r = Math.hypot(dx, dy, dz), D = nb.d * R, GM = G * nb.m * M;
       const ax = GM * (dx / r ** 3 - P[0] / D ** 3), ay = GM * (dy / r ** 3 - P[1] / D ** 3), az = GM * (dz / r ** 3);
       ar += ax * u[0] + ay * u[1] + az * u[2];
-      ph += -GM / r + GM / D - GM * (P[0] * x[0] + P[1] * x[1]) / D ** 3;
+      ph += -GM / r + GM / D + GM * (P[0] * x[0] + P[1] * x[1]) / D ** 3; // potential minus its constant and uniform-fall parts
     }
     return [ar / (H0 * H0 * R), ph];
   };
@@ -1916,7 +2012,7 @@ function slEffects(nbs) {
 }
 // allowed-neighbour curves: both effects grow in proportion to mass, so compute once for a 1x neighbour at each distance
 const ALLOW = (() => { const out = []; for (let k = 0; k <= 60; k++) { const ld = 0.04 + (k / 60) * (3 - 0.04), e = slEffects([{ m: 1, d: 10 ** ld, a: 0 }]); const near = Math.max(...e.dirs.map((x) => x.dH)); out.push({ ld, cmbMax: Math.log10(1e-5 / e.cmb), deNeed: Math.log10(0.7 / near) }); } return out; })();
-const fmtPct = (x) => { const v = 100 * x, a = Math.abs(v); if (a === 0) return "0%"; if (a >= 0.1) return (v > 0 ? "+" : "") + v.toFixed(a >= 10 ? 0 : 1) + "%"; return (v > 0 ? "+" : "−") + fmtSci(a) + "%"; };
+const fmtPct = (x) => { const v = 100 * x, a = Math.abs(v); if (a === 0) return "0%"; if (a >= 1e4) return (v > 0 ? "+" : "−") + fmtSci(a) + "%"; if (a >= 0.1) return (v > 0 ? "+" : "") + v.toFixed(a >= 10 ? 0 : 1) + "%"; return (v > 0 ? "+" : "−") + fmtSci(a) + "%"; };
 function slUpdate() {
   for (const k of ["1", "2"]) {
     $("n" + k + "mOut").textContent = fmtSci(10 ** +$("n" + k + "m").value) + "×";
@@ -1931,7 +2027,7 @@ function slUpdate() {
   $("slCmb").textContent = fmtSci(e.cmb);
   $("slFall").textContent = fmtA(e.fall);
   $("slLop").textContent = far !== 0 ? (near.dH / far).toPrecision(3) + "× stronger" : "–";
-  $("slDe").textContent = (near.dH / 0.7 * 100 >= 0.1 ? (near.dH / 0.7 * 100).toPrecision(2) + "%" : fmtSci(near.dH / 0.7 * 100) + "%") + " (near side only)";
+  { const share = near.dH / 0.7 * 100; $("slDe").textContent = (share >= 0.1 && share < 1e4 ? share.toPrecision(2) : fmtSci(share)) + "% (near side only)"; }
   const row = ALLOW.reduce((b, x) => (Math.abs(x.ld - +$("n1d").value) < Math.abs(b.ld - +$("n1d").value) ? x : b));
   $("slMax").textContent = fmtSci(10 ** row.cmbMax) + "× our universe";
   const v = $("slVerdict"), cmbOk = e.cmb < 1e-5, deOk = near.dH >= 0.35;
@@ -1959,14 +2055,14 @@ function slDraw(dt) {
     } else {
       const ex = cx + Math.cos(nb.a) * (Math.min(W, H) / 2 - 26), ey = cy - Math.sin(nb.a) * (Math.min(W, H) / 2 - 26);
       g.save(); g.translate(ex, ey); g.rotate(-nb.a); g.beginPath(); g.moveTo(10, 0); g.lineTo(-6, -7); g.lineTo(-6, 7); g.closePath(); g.fillStyle = "#E8963F"; g.fill(); g.restore();
-      g.fillStyle = "#E8963F"; g.font = `11px ${css("--f-mono")}`; g.textAlign = "center"; g.fillText(`well ${(nb.d).toPrecision(2)}× away`, ex, ey + (Math.sin(nb.a) > 0 ? 22 : -14));
+      g.fillStyle = "#E8963F"; g.font = `11px ${css("--f-mono")}`; const lab = `well ${(nb.d).toPrecision(2)}× away`, half = g.measureText(lab).width / 2 + 6; g.textAlign = "center"; g.fillText(lab, Math.min(W - half, Math.max(half, ex)), ey + (Math.sin(nb.a) > 0 ? 22 : -14));
     }
   }
   // our universe: matter flowing outward; stretched by direction (exaggerated so it's visible)
   const maxd = Math.max(1e-30, ...SL.e.dirs.map((x) => Math.abs(x.dH)));
   const gain = 0.35 / maxd;
   const outside = SL.view === "outside";
-  const slide = outside ? (SL.t * 0.12 % 1) * Math.min(rad * 0.8, 40 + 2e11 * SL.e.fall) : 0;
+  const slide = outside ? (reduceMotion ? 0.6 : SL.t * 0.12 % 1) * Math.min(rad * 0.8, 40 + 2e11 * SL.e.fall) : 0;
   const ox = cx + Math.cos(SL.e.fallDir) * slide, oy = cy - Math.sin(SL.e.fallDir) * slide;
   g.beginPath(); g.arc(ox, oy, rad, 0, 2 * Math.PI); g.strokeStyle = "rgba(60,196,193,0.25)"; g.setLineDash([4, 6]); g.lineWidth = 1; g.stroke(); g.setLineDash([]);
   g.fillStyle = "#7FF5F0";
@@ -1983,8 +2079,9 @@ function slDraw(dt) {
   SL.e.dirs.forEach((x, i) => { const rr = rad * (1 + x.dH * gain), X = ox + Math.cos(x.a) * rr, Y = oy - Math.sin(x.a) * rr; i ? g.lineTo(X, Y) : g.moveTo(X, Y); });
   g.closePath(); g.strokeStyle = "#3CC4C1"; g.lineWidth = 2; g.stroke();
   g.fillStyle = "#9FB0C8"; g.font = `11px ${css("--f-mono")}`; g.textAlign = "left";
-  g.fillText(outside ? "outside view: the whole universe slides toward the well" : "inside view: the slide can't be felt, only the stretch", 12, H - 18);
-  g.fillText(`stretch exaggerated ×${fmtSci(gain)}`, 12, H - 34);
+  const narrow = W < 600, capY = narrow ? 66 : H - 18; // on phones the buttons take the bottom edge
+  g.fillText(narrow ? (outside ? "outside: sliding toward the well" : "inside: only the stretch shows") : (outside ? "outside view: the whole universe slides toward the well" : "inside view: the slide can't be felt, only the stretch"), 12, capY);
+  g.fillText(`stretch exaggerated ×${fmtSci(gain)}`, 12, narrow ? capY + 16 : H - 34);
 }
 function slCharts() {
   const e = SL.e;
