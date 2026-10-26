@@ -150,6 +150,8 @@ footer { font-size: 14px; color: var(--muted); }
 .res.ok b { color: var(--good); } .res.no b { color: var(--bad); }
 .rar-wrap { position: relative; }
 .tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; font-family: var(--f-mono); font-size: 12px; line-height: 1.45; box-shadow: 0 4px 14px rgba(0,0,0,0.12); white-space: nowrap; }
+.keys .k-ok { color: var(--good); } .keys .k-ok::before { height: 10px; opacity: 0.35; }
+.keys .k-need { color: var(--other); }
 .keys .k-db { color: var(--c-db); } .keys .k-e2 { color: var(--c-e2); } .keys .k-a { color: var(--c-a); }
 .keys .k-dot::before { width: 9px; height: 9px; border-radius: 50%; }
 .keys .k-dash::before { background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent 5px 9px); }
@@ -639,6 +641,96 @@ footer { font-size: 14px; color: var(--muted); }
         <h3>A lopsided acceleration?</h3>
         <p>Adding a tide on top of dark energy improves the fit only slightly, not enough to count. But one research group (Colin et al. 2019; Sah et al. 2025) reports that the acceleration has a <em>dipole</em>, stronger toward one side of the sky and lined up with our motion, which they tie to large-scale flows of galaxies. Others dispute it. If it holds up, a pull from outside our universe would be one candidate cause, but it would sit on top of dark energy, not replace it.</p>
       </article>
+    </div>
+  </section>
+
+  <section class="stack" id="slope">
+    <div class="stack prose">
+      <span class="eyebrow">Simulation 3 · our universe on a slope</span>
+      <span class="scale">Scale: our whole universe and its neighbours</span>
+      <h2>Which neighbours could be pulling on us?</h2>
+      <p>Put a neighbour universe anywhere around ours: choose how heavy it is, how far away, and at what angle its well sits. Our universe sits on the slope of that well. Switch between two views. <strong>Outside</strong> shows the whole universe sliding toward the well. <strong>Inside</strong> shows what we could actually measure: the slide disappears (everything falls together) and only the uneven stretching is left.</p>
+      <p>The chart on the right turns it around: for each distance, the heaviest neighbour the CMB allows, and how heavy one would need to be to replace dark energy.</p>
+    </div>
+    <div class="panel">
+      <div class="viewport ts-view" id="slopeVp">
+        <canvas id="slopeCanvas" role="img" aria-label="Our universe as a cloud of matter on the slope of a neighbour universe's well, from outside or from inside"></canvas>
+        <div class="legend">
+          <div><i style="background:#3CC4C1"></i>our universe (stretch exaggerated)</div>
+          <div><i style="background:#E8963F"></i>neighbour universe's well</div>
+        </div>
+        <div class="vp-buttons">
+          <button id="slopeOutside" aria-pressed="false">Outside</button>
+          <button id="slopeInside" aria-pressed="true">Inside</button>
+        </div>
+      </div>
+      <div class="side">
+        <div class="stats">
+          <div class="stat"><b id="slNear">–</b><span>expansion change, near side</span></div>
+          <div class="stat"><b id="slFar">–</b><span>far side</span></div>
+          <div class="stat"><b id="slSide">–</b><span>at the sides</span></div>
+          <div class="stat"><b id="slCmb">–</b><span>CMB mark (seen: ~10⁻⁵)</span></div>
+        </div>
+        <h3>Neighbour 1</h3>
+        <div class="ctrl">
+          <label for="n1m">Mass <output id="n1mOut">1×</output></label>
+          <input type="range" id="n1m" min="-6" max="6" step="0.1" value="0">
+          <span class="hint">Compared with all the ordinary matter in our observable universe.</span>
+        </div>
+        <div class="ctrl">
+          <label for="n1d">Distance <output id="n1dOut">3× our radius</output></label>
+          <input type="range" id="n1d" min="0.04" max="3" step="0.01" value="0.477">
+          <span class="hint">In units of our observable universe's radius (46.5 billion light-years).</span>
+        </div>
+        <div class="ctrl">
+          <label for="n1a">Angle of its well <output id="n1aOut">0°</output></label>
+          <input type="range" id="n1a" min="0" max="359" step="1" value="0">
+        </div>
+        <label class="check"><input type="checkbox" id="n2on"> Add a second neighbour</label>
+        <div id="n2box" hidden>
+          <div class="ctrl">
+            <label for="n2m">Mass <output id="n2mOut">1×</output></label>
+            <input type="range" id="n2m" min="-6" max="6" step="0.1" value="0">
+          </div>
+          <div class="ctrl">
+            <label for="n2d">Distance <output id="n2dOut">3× our radius</output></label>
+            <input type="range" id="n2d" min="0.04" max="3" step="0.01" value="0.477">
+          </div>
+          <div class="ctrl">
+            <label for="n2a">Angle <output id="n2aOut">120°</output></label>
+            <input type="range" id="n2a" min="0" max="359" step="1" value="120">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="test">
+      <div class="chart-wrap">
+        <div class="ts-charts">
+          <div class="stack" style="gap:6px;min-width:0">
+            <h3>Expansion change by direction, seen from inside</h3>
+            <canvas class="chart small" id="polarChart" role="img" aria-label="How much faster or slower the expansion runs in each direction, as measured from inside our universe"></canvas>
+          </div>
+          <div class="stack" style="gap:6px;min-width:0">
+            <h3>Which neighbours are allowed</h3>
+            <canvas class="chart small" id="allowChart" role="img" aria-label="Neighbour mass against distance: the region the CMB allows, and the mass needed to replace dark energy"></canvas>
+          </div>
+        </div>
+        <div class="keys">
+          <span class="k-ext">faster (outward) / slower (inward) than average, by direction</span>
+          <span class="k-ok">allowed by the CMB</span>
+          <span class="k-need k-dash">needed to replace dark energy</span>
+        </div>
+      </div>
+      <div class="side">
+        <h3>Readings</h3>
+        <div class="readout">
+          <div class="line"><span>Pull on us as a whole (can't be felt)</span><span id="slFall">–</span></div>
+          <div class="line"><span>Near side vs far side</span><span id="slLop">–</span></div>
+          <div class="line"><span>Share of the measured acceleration</span><span id="slDe">–</span></div>
+          <div class="line"><span>Heaviest neighbour the CMB allows here</span><span id="slMax">–</span></div>
+        </div>
+        <div class="verdict" id="slVerdict">–</div>
+      </div>
     </div>
   </section>
 
@@ -1790,8 +1882,151 @@ $("perGalChart").addEventListener("mouseleave", () => ($("perGalTip").hidden = t
 new ResizeObserver(drawGap).observe($("gapChart"));
 new ResizeObserver(drawPerGal).observe($("perGalChart"));
 
+/* ================= Simulation 3: our universe on a slope ================= */
+// Our observable universe (radius R) sits on the slope of one or two neighbour universes' wells. A pull that is the
+// same everywhere (the slide) can't be felt from inside; only the difference across our universe (stretching) shows.
+const SL = { G: 6.674e-11, c: 2.998e8, R: 46.5 * 9.461e24, H0: 70e3 / 3.086e22, M: 1.5e53, view: "inside", t: 0 };
+const SPH = (() => { const n = 900, out = []; for (let k = 0; k < n; k++) { const z = 1 - 2 * (k + 0.5) / n, s = Math.sqrt(1 - z * z), p = Math.PI * (1 + Math.sqrt(5)) * k; out.push([s * Math.cos(p), s * Math.sin(p), z]); } return out; })();
+function slNeighbours() {
+  const list = [{ m: 10 ** +$("n1m").value, d: 10 ** +$("n1d").value, a: +$("n1a").value * Math.PI / 180 }];
+  if ($("n2on").checked) list.push({ m: 10 ** +$("n2m").value, d: 10 ** +$("n2d").value, a: +$("n2a").value * Math.PI / 180 });
+  return list;
+}
+function slEffects(nbs) {
+  // relative outward pull at our edge in direction u (3D unit vector), and leftover potential (after the uniform fall)
+  const { G, R, H0, M } = SL;
+  const rel = (u) => {
+    let ar = 0, ph = 0;
+    for (const nb of nbs) {
+      const P = [nb.d * R * Math.cos(nb.a), nb.d * R * Math.sin(nb.a), 0], x = [u[0] * R, u[1] * R, u[2] * R];
+      const dx = P[0] - x[0], dy = P[1] - x[1], dz = P[2] - x[2], r = Math.hypot(dx, dy, dz), D = nb.d * R, GM = G * nb.m * M;
+      const ax = GM * (dx / r ** 3 - P[0] / D ** 3), ay = GM * (dy / r ** 3 - P[1] / D ** 3), az = GM * (dz / r ** 3);
+      ar += ax * u[0] + ay * u[1] + az * u[2];
+      ph += -GM / r + GM / D - GM * (P[0] * x[0] + P[1] * x[1]) / D ** 3;
+    }
+    return [ar / (H0 * H0 * R), ph];
+  };
+  let pmin = Infinity, pmax = -Infinity;
+  for (const u of SPH) { const [, ph] = rel(u); if (ph < pmin) pmin = ph; if (ph > pmax) pmax = ph; }
+  const dirs = [];
+  for (let k = 0; k < 180; k++) { const a = (k / 180) * 2 * Math.PI; dirs.push({ a, dH: rel([Math.cos(a), Math.sin(a), 0])[0] }); }
+  let fall = [0, 0];
+  for (const nb of nbs) { const D = nb.d * R, g = SL.G * nb.m * SL.M / (D * D); fall[0] += g * Math.cos(nb.a); fall[1] += g * Math.sin(nb.a); }
+  return { dirs, cmb: (pmax - pmin) / 2 / (3 * SL.c * SL.c), fall: Math.hypot(...fall), fallDir: Math.atan2(fall[1], fall[0]) };
+}
+// allowed-neighbour curves: both effects grow in proportion to mass, so compute once for a 1x neighbour at each distance
+const ALLOW = (() => { const out = []; for (let k = 0; k <= 60; k++) { const ld = 0.04 + (k / 60) * (3 - 0.04), e = slEffects([{ m: 1, d: 10 ** ld, a: 0 }]); const near = Math.max(...e.dirs.map((x) => x.dH)); out.push({ ld, cmbMax: Math.log10(1e-5 / e.cmb), deNeed: Math.log10(0.7 / near) }); } return out; })();
+const fmtPct = (x) => { const v = 100 * x, a = Math.abs(v); if (a === 0) return "0%"; if (a >= 0.1) return (v > 0 ? "+" : "") + v.toFixed(a >= 10 ? 0 : 1) + "%"; return (v > 0 ? "+" : "−") + fmtSci(a) + "%"; };
+function slUpdate() {
+  for (const k of ["1", "2"]) {
+    $("n" + k + "mOut").textContent = fmtSci(10 ** +$("n" + k + "m").value) + "×";
+    $("n" + k + "dOut").textContent = (10 ** +$("n" + k + "d").value).toPrecision(3).replace(/\.?0+$/, "") + "× our radius";
+    $("n" + k + "aOut").textContent = $("n" + k + "a").value + "°";
+  }
+  $("n2box").hidden = !$("n2on").checked;
+  const nbs = slNeighbours(), e = slEffects(nbs); SL.e = e; SL.nbs = nbs;
+  const n1 = nbs[0], near = e.dirs.reduce((b, x) => (x.dH > b.dH ? x : b)), at = (ang) => e.dirs[Math.round(((ang % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI) * 180) % 180].dH;
+  const far = at(n1.a + Math.PI), side = at(n1.a + Math.PI / 2);
+  $("slNear").textContent = fmtPct(near.dH); $("slFar").textContent = fmtPct(far); $("slSide").textContent = fmtPct(side);
+  $("slCmb").textContent = fmtSci(e.cmb);
+  $("slFall").textContent = fmtA(e.fall);
+  $("slLop").textContent = far !== 0 ? (near.dH / far).toPrecision(3) + "× stronger" : "–";
+  $("slDe").textContent = (near.dH / 0.7 * 100 >= 0.1 ? (near.dH / 0.7 * 100).toPrecision(2) + "%" : fmtSci(near.dH / 0.7 * 100) + "%") + " (near side only)";
+  const row = ALLOW.reduce((b, x) => (Math.abs(x.ld - +$("n1d").value) < Math.abs(b.ld - +$("n1d").value) ? x : b));
+  $("slMax").textContent = fmtSci(10 ** row.cmbMax) + "× our universe";
+  const v = $("slVerdict"), cmbOk = e.cmb < 1e-5, deOk = near.dH >= 0.35;
+  if (deOk && !cmbOk) { v.className = "verdict"; v.textContent = `Strong enough to rival the acceleration on the near side, but it would print a pattern of ${fmtSci(e.cmb)} on the CMB, about ${fmtSci(e.cmb / 1e-5)} times what we see. Ruled out.`; }
+  else if (!cmbOk) { v.className = "verdict"; v.textContent = `Too weak to explain the acceleration (${(near.dH / 0.7 * 100).toPrecision(2)}% of it on the near side) and still too strong for the CMB (${fmtSci(e.cmb / 1e-5)} times the pattern we see). Ruled out.`; }
+  else { v.className = "verdict good"; v.textContent = `Allowed: its mark on the CMB (${fmtSci(e.cmb)}) is below what we see. But its stretching is tiny: at most ${fmtPct(near.dH)} on the near side, ${fmtSci(near.dH / 0.7 * 100)}% of the measured acceleration. The pull on our universe as a whole (${fmtA(e.fall)}) is real but can't be felt from inside.`; }
+  slCharts();
+}
+const slCv = $("slopeCanvas"), slCtx = slCv.getContext("2d");
+const SLP = Array.from({ length: 420 }, () => { const r = Math.sqrt(Math.random()), a = Math.random() * 2 * Math.PI; return { r, a, ph: Math.random() }; });
+function slDraw(dt) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2), W = slCv.clientWidth, H = slCv.clientHeight;
+  if (slCv.width !== Math.round(W * dpr)) { slCv.width = Math.round(W * dpr); slCv.height = Math.round(H * dpr); }
+  const g = slCtx; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.fillStyle = "#070A11"; g.fillRect(0, 0, W, H);
+  if (!SL.e) return;
+  SL.t += dt;
+  const cx = W / 2, cy = H / 2, rad = Math.min(W, H) * 0.26;
+  // wells: rings around each neighbour (drawn at the edge with a label when off-screen)
+  for (const nb of SL.nbs) {
+    const dist = nb.d * rad, x = cx + Math.cos(nb.a) * dist, y = cy - Math.sin(nb.a) * dist;
+    const onscreen = x > -40 && x < W + 40 && y > -40 && y < H + 40;
+    if (onscreen) {
+      for (let k = 1; k <= 6; k++) { g.beginPath(); g.arc(x, y, k * 14 * Math.cbrt(Math.max(0.02, Math.min(50, nb.m))), 0, 2 * Math.PI); g.strokeStyle = `rgba(232,150,63,${0.45 - k * 0.06})`; g.lineWidth = 1.5; g.stroke(); }
+      g.beginPath(); g.arc(x, y, 6, 0, 2 * Math.PI); g.fillStyle = "#E8963F"; g.fill();
+    } else {
+      const ex = cx + Math.cos(nb.a) * (Math.min(W, H) / 2 - 26), ey = cy - Math.sin(nb.a) * (Math.min(W, H) / 2 - 26);
+      g.save(); g.translate(ex, ey); g.rotate(-nb.a); g.beginPath(); g.moveTo(10, 0); g.lineTo(-6, -7); g.lineTo(-6, 7); g.closePath(); g.fillStyle = "#E8963F"; g.fill(); g.restore();
+      g.fillStyle = "#E8963F"; g.font = `11px ${css("--f-mono")}`; g.textAlign = "center"; g.fillText(`well ${(nb.d).toPrecision(2)}× away`, ex, ey + (Math.sin(nb.a) > 0 ? 22 : -14));
+    }
+  }
+  // our universe: matter flowing outward; stretched by direction (exaggerated so it's visible)
+  const maxd = Math.max(1e-30, ...SL.e.dirs.map((x) => Math.abs(x.dH)));
+  const gain = 0.35 / maxd;
+  const outside = SL.view === "outside";
+  const slide = outside ? (SL.t * 0.12 % 1) * Math.min(rad * 0.8, 40 + 2e11 * SL.e.fall) : 0;
+  const ox = cx + Math.cos(SL.e.fallDir) * slide, oy = cy - Math.sin(SL.e.fallDir) * slide;
+  g.beginPath(); g.arc(ox, oy, rad, 0, 2 * Math.PI); g.strokeStyle = "rgba(60,196,193,0.25)"; g.setLineDash([4, 6]); g.lineWidth = 1; g.stroke(); g.setLineDash([]);
+  g.fillStyle = "#7FF5F0";
+  for (const p of SLP) {
+    const r = ((p.r + SL.t * 0.05 + p.ph) % 1);
+    const k = Math.round(((p.a % (2 * Math.PI)) / (2 * Math.PI)) * 180) % 180, st = SL.e.dirs[k].dH * gain;
+    const rr = rad * r * (1 + st);
+    g.globalAlpha = 0.25 + 0.6 * (1 - r);
+    g.fillRect(ox + Math.cos(p.a) * rr - 1.2, oy - Math.sin(p.a) * rr - 1.2, 2.4, 2.4);
+  }
+  g.globalAlpha = 1;
+  // outline of the stretched edge
+  g.beginPath();
+  SL.e.dirs.forEach((x, i) => { const rr = rad * (1 + x.dH * gain), X = ox + Math.cos(x.a) * rr, Y = oy - Math.sin(x.a) * rr; i ? g.lineTo(X, Y) : g.moveTo(X, Y); });
+  g.closePath(); g.strokeStyle = "#3CC4C1"; g.lineWidth = 2; g.stroke();
+  g.fillStyle = "#9FB0C8"; g.font = `11px ${css("--f-mono")}`; g.textAlign = "left";
+  g.fillText(outside ? "outside view: the whole universe slides toward the well" : "inside view: the slide can't be felt, only the stretch", 12, H - 18);
+  g.fillText(`stretch exaggerated ×${fmtSci(gain)}`, 12, H - 34);
+}
+function slCharts() {
+  const e = SL.e;
+  { // polar: expansion change by direction
+    const cv = $("polarChart"), dpr = Math.min(window.devicePixelRatio || 1, 2), W = cv.clientWidth, H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const cx = W / 2, cy = H / 2, r0 = Math.min(W, H) * 0.3, maxd = Math.max(1e-30, ...e.dirs.map((x) => Math.abs(x.dH))), sc = (Math.min(W, H) * 0.16) / maxd;
+    g.strokeStyle = css("--line"); g.lineWidth = 1; g.beginPath(); g.arc(cx, cy, r0, 0, 2 * Math.PI); g.stroke();
+    g.fillStyle = css("--muted"); g.font = `11px ${css("--f-mono")}`; g.textAlign = "center"; g.fillText("average", cx, cy - r0 - 6);
+    g.beginPath(); e.dirs.forEach((x, i) => { const rr = r0 + x.dH * sc, X = cx + Math.cos(x.a) * rr, Y = cy - Math.sin(x.a) * rr; i ? g.lineTo(X, Y) : g.moveTo(X, Y); }); g.closePath();
+    g.strokeStyle = css("--other"); g.lineWidth = 2.5; g.stroke();
+    for (const nb of SL.nbs) { const X = cx + Math.cos(nb.a) * (Math.min(W, H) / 2 - 10), Y = cy - Math.sin(nb.a) * (Math.min(W, H) / 2 - 10); g.beginPath(); g.arc(X, Y, 5, 0, 2 * Math.PI); g.fillStyle = css("--other"); g.fill(); }
+    g.fillStyle = css("--muted"); g.textAlign = "left"; g.fillText(`edge = ±${fmtPct(maxd).replace("+", "")}`, 6, H - 8);
+  }
+  { // allowed neighbours: log mass vs log distance
+    const cv = $("allowChart"), dpr = Math.min(window.devicePixelRatio || 1, 2), W = cv.clientWidth, H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const pad = { l: 56, r: 12, t: 10, b: 40 }, x0 = 0.04, x1 = 3, y0 = -6, y1 = 12;
+    const X = (v) => pad.l + ((v - x0) / (x1 - x0)) * (W - pad.l - pad.r), Y = (v) => pad.t + (1 - (Math.max(y0, Math.min(y1, v)) - y0) / (y1 - y0)) * (H - pad.t - pad.b);
+    g.font = `12px ${css("--f-mono")}`; g.strokeStyle = css("--line"); g.fillStyle = css("--muted"); g.lineWidth = 1; g.textAlign = "right"; g.textBaseline = "middle";
+    for (let v = -6; v <= 12; v += 3) { g.beginPath(); g.moveTo(pad.l, Y(v)); g.lineTo(W - pad.r, Y(v)); g.stroke(); g.fillText("10" + sup(String(v)), pad.l - 6, Y(v)); }
+    g.textAlign = "center"; g.textBaseline = "top"; for (const v of [0, 1, 2, 3]) g.fillText(v === 0 ? "1" : "10" + sup(String(v)), X(v), H - pad.b + 6);
+    g.fillText("distance (× our radius)", (pad.l + W - pad.r) / 2, H - 15);
+    g.save(); g.translate(10, (pad.t + H - pad.b) / 2); g.rotate(-Math.PI / 2); g.textBaseline = "middle"; g.fillText("mass (× our universe)", 0, 0); g.restore();
+    g.fillStyle = css("--good"); g.globalAlpha = 0.18; g.beginPath(); g.moveTo(X(ALLOW[0].ld), Y(y0));
+    for (const p of ALLOW) g.lineTo(X(p.ld), Y(p.cmbMax)); g.lineTo(X(ALLOW[ALLOW.length - 1].ld), Y(y0)); g.closePath(); g.fill(); g.globalAlpha = 1;
+    g.strokeStyle = css("--good"); g.lineWidth = 2; g.beginPath(); ALLOW.forEach((p, i) => (i ? g.lineTo(X(p.ld), Y(p.cmbMax)) : g.moveTo(X(p.ld), Y(p.cmbMax)))); g.stroke();
+    g.strokeStyle = css("--other"); g.setLineDash([6, 5]); g.beginPath(); ALLOW.forEach((p, i) => (i ? g.lineTo(X(p.ld), Y(p.deNeed)) : g.moveTo(X(p.ld), Y(p.deNeed)))); g.stroke(); g.setLineDash([]);
+    for (const [k, nb] of SL.nbs.entries()) { const px = X(Math.log10(nb.d)), py = Y(Math.log10(nb.m)); g.beginPath(); g.arc(px, py, 5, 0, 2 * Math.PI); g.fillStyle = css("--fg"); g.fill(); g.strokeStyle = css("--surface"); g.lineWidth = 2; g.stroke(); g.fillStyle = css("--fg"); g.textAlign = "left"; g.textBaseline = "middle"; g.font = `11px ${css("--f-mono")}`; g.fillText(String(k + 1), px + 8, py); }
+  }
+}
+for (const id of ["n1m", "n1d", "n1a", "n2m", "n2d", "n2a"]) $(id).addEventListener("input", slUpdate);
+$("n2on").addEventListener("change", slUpdate);
+for (const [id, view] of [["slopeOutside", "outside"], ["slopeInside", "inside"]]) $(id).onclick = () => { SL.view = view; $("slopeOutside").setAttribute("aria-pressed", String(view === "outside")); $("slopeInside").setAttribute("aria-pressed", String(view === "inside")); };
+let slLast = performance.now(), slVisible = false;
+new IntersectionObserver((es) => { slVisible = es.some((x) => x.isIntersecting); }, { threshold: 0.05 }).observe($("slope"));
+(function slLoop(now) { const dt = Math.min(0.05, (now - slLast) / 1000); slLast = now; if (slVisible || !SL.drawn) { slDraw(reduceMotion ? 0 : dt); SL.drawn = true; } requestAnimationFrame(slLoop); })(performance.now());
+new ResizeObserver(() => { slDraw(0); slCharts(); }).observe($("polarChart"));
+slUpdate();
+
 /* redraw on resize / theme change */
-const redrawAll = () => { drawTest1(); drawTest2(); drawWell(); drawOverlap(); tsCharts(); drawRar(); drawGap(); drawPerGal(); };
+const redrawAll = () => { drawTest1(); drawTest2(); drawWell(); drawOverlap(); tsCharts(); drawRar(); drawGap(); drawPerGal(); slCharts(); };
 new ResizeObserver(() => drawTest1()).observe($("map"));
 new ResizeObserver(() => drawTest2()).observe($("chart2"));
 new ResizeObserver(() => drawWell()).observe($("wellChart"));

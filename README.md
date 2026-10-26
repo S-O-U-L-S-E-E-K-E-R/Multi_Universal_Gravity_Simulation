@@ -66,6 +66,14 @@ rotation alone +18/+22, rotation + lopsided well +24 BIC). The supernovae recove
 (250–350 km/s, 19–59° from the CMB direction). CMB limits on uneven expansion and rotation (Saadeh et al. 2016) are
 far stricter still; falling into a bigger well as a whole remains undetectable from inside.
 
+## Simulation 3: our universe on a slope
+
+The page's third simulation puts our universe on the slope of one or two neighbours' wells (mass, distance, angle).
+From outside the whole universe slides toward the well; from inside only the uneven stretch shows. Turned around, the
+CMB caps how heavy a neighbour can be at each distance (`analysis/neighbour_limits.py`): a neighbour as heavy as our
+universe must be more than ~12 of our radii away, and at every distance the mass needed to replace dark energy is
+~10⁴–10⁵ times what the CMB allows.
+
 ## Test suite result
 
 Only a neighbour universe's matter that has expanded into our space and gathered in our galaxies' wells passes all five tests, and only if small galaxies
