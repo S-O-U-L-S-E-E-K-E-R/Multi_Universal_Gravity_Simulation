@@ -134,6 +134,11 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px s
 .finding p { font-size: 15.5px; }
 ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
 footer { font-size: 14px; color: var(--muted); }
+.ts-view { cursor: default; touch-action: auto; }
+.ts-view:active { cursor: default; }
+.ts-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 18px; }
+.ts-charts h3 { font-size: 0.95rem; }
+.chart.small { height: clamp(200px, 26vw, 260px); }
 </style>
 
 <main>
@@ -144,7 +149,7 @@ footer { font-size: 14px; color: var(--muted); }
     <p>The theory makes three claims. This page simulates each one and checks it against real numbers.</p>
     <ul>
       <li><strong>Dark matter is other universes.</strong> The extra gravity we measure in galaxies comes from neighbouring marbles, not unseen particles.</li>
-      <li><strong>Collisions make big bangs.</strong> Expanding universes grow into each other, and the matter where they collide forms a dense new universe.</li>
+      <li><strong>Extreme density makes big bangs.</strong> Wherever matter from the universes piles up densely enough, it ignites as a new universe.</li>
       <li><strong>Our edges are pulled unevenly.</strong> Neighbours close to our edge tug harder on that side.</li>
     </ul>
   </header>
@@ -153,8 +158,8 @@ footer { font-size: 14px; color: var(--muted); }
     <div class="stack prose">
       <span class="eyebrow">Simulation 1 · the sheet</span>
       <h2>The multiverse on a flat sheet</h2>
-      <p>Each universe is a cloud of <strong>internal weights</strong> (the dots), heavier toward its centre and lighter toward its edge. Every weight pulls on its own, so mass near a neighbour counts for more and mass on the far side counts for less. Every universe <strong>expands</strong>: its weights spread out, so the pull at its centre keeps getting weaker. Nothing collapses, and total mass never changes. Each universe's edge (the outlined circle) is its observable horizon: the farthest its light can reach. Two universes can sit edge to edge without either seeing the other. Gravity only acts between two universes when their edges are within the <strong>gravity reach</strong>. Push the reach down, and universes far enough apart stop affecting each other at all. The colours on the sheet show the combined pull: brighter bands are deeper wells.</p>
-      <p>When two expanding universes grow into each other far enough, the matter where they meet forms a dense <strong>newborn universe</strong>: a big bang. It takes a share of mass from both parents, starts small with a strong centre, and then expands like the rest. The <span class="ours">teal ring</span> shows how unevenly the neighbours pull on our edges, exaggerated so you can see it. Switch to the dented view to see the sheet in 3D.</p>
+      <p>Each universe is a collection of weights (the dots) that move freely; it isn't one solid object. Every universe starts with its own big bang. Its matter is packed densely at the centre and thinly at the edge, and all of it flies outward, so the universe's edge grows over time and its centre thins out. Every weight pulls on every other weight, in its own universe and in the others. Nothing is held in a fixed shape.</p>
+      <p>Neighbours can drag a universe's thin outer matter, denting it where dense matter pulls inward and stretching it elsewhere, like dense pieces pressed into expanding play-dough. The outline around each universe shows its current shape. Wherever matter packs together tightly enough, whether gravity pulls it together or it crashes in from two universes, it ignites as a <strong>newborn universe</strong> with its own big bang. Density alone sets it off. The "densest patch" counter shows how close the sheet is getting. Total mass never changes. Switch to the dented view to see the wells in 3D.</p>
     </div>
     <div class="panel">
       <div class="viewport" id="vp">
@@ -174,38 +179,34 @@ footer { font-size: 14px; color: var(--muted); }
         <div class="stats">
           <div class="stat"><b id="sCount">0</b><span>universes</span></div>
           <div class="stat"><b id="sBangs">0</b><span>big bangs</span></div>
-          <div class="stat"><b id="sNear">0</b><span>neighbours in reach of ours</span></div>
-          <div class="stat"><b id="sTide">0%</b><span>uneven edge pull (× own gravity)</span></div>
+          <div class="stat"><b id="sSize">1.0×</b><span>our size vs. start</span></div>
+          <div class="stat"><b id="sShape">0%</b><span>our shape: out of round</span></div>
           <div class="stat"><b id="sMass">0</b><span>total mass (stays fixed)</span></div>
-          <div class="stat"><b id="sCore">100%</b><span>our centre's pull vs. start</span></div>
+          <div class="stat"><b id="sCore">100%</b><span>matter left in our centre</span></div>
+          <div class="stat"><b id="sPeak">–</b><span>densest patch now (× newborn core)</span></div>
         </div>
         <div class="log" id="log" aria-live="polite"><div>Simulation started.</div></div>
         <h3>Controls</h3>
         <div class="ctrl">
-          <label for="reach">Gravity reach <output id="reachOut">unlimited</output></label>
-          <input type="range" id="reach" min="0" max="100" step="1" value="100">
-          <span class="hint">How close two edges must be before gravity acts between them. Far right means no limit (normal gravity).</span>
+          <label for="expand">Big-bang strength <output id="expandOut">1.20×</output></label>
+          <input type="range" id="expand" min="0.7" max="1.6" step="0.05" value="1.2">
+          <span class="hint">Outward speed of each universe's matter, compared with the speed needed to escape its own pull. Above 1× it keeps expanding; below 1× it falls back.</span>
         </div>
         <div class="ctrl">
-          <label for="nUni">Universes at start <output id="nUniOut">36</output></label>
-          <input type="range" id="nUni" min="6" max="80" step="1" value="36">
+          <label for="nUni">Universes at start <output id="nUniOut">10</output></label>
+          <input type="range" id="nUni" min="2" max="40" step="1" value="10">
           <span class="hint">Applies when you press Reset.</span>
         </div>
         <div class="ctrl">
-          <label for="thr">Overlap for a big bang <output id="thrOut">40%</output></label>
-          <input type="range" id="thr" min="10" max="90" step="5" value="40">
-          <span class="hint">How far two universes must grow into each other before their colliding matter ignites.</span>
-        </div>
-        <div class="ctrl">
-          <label for="hub">Expansion rate <output id="hubOut">0.020</output></label>
-          <input type="range" id="hub" min="0" max="0.1" step="0.002" value="0.02">
-          <span class="hint">How fast every universe spreads out. As it spreads, the pull at its centre weakens.</span>
+          <label for="thr">Density for a big bang <output id="thrOut">0.50×</output></label>
+          <input type="range" id="thr" min="0.05" max="1.5" step="0.05" value="0.5">
+          <span class="hint">How tightly matter must pack into one small patch before it ignites, compared with the core of a newborn universe (1× = just as dense). The real value is unknown, so try different settings.</span>
         </div>
         <div class="ctrl">
           <label for="spd">Speed <output id="spdOut">1.0×</output></label>
           <input type="range" id="spd" min="0.2" max="3" step="0.1" value="1">
         </div>
-        <label class="check"><input type="checkbox" id="trails" checked> Show trails</label>
+        <label class="check"><input type="checkbox" id="edges" checked> Show universe outlines</label>
         <div class="row">
           <button id="pause">Pause</button>
           <button id="drop">Add a universe</button>
@@ -383,6 +384,84 @@ footer { font-size: 14px; color: var(--muted); }
     </div>
   </section>
 
+  <section class="stack" id="formation">
+    <div class="stack prose">
+      <span class="eyebrow">Simulation 2 · two sheets forming galaxies</span>
+      <h2>Do our galaxies grow inside the hidden sheet's wells?</h2>
+      <p>Test 2 only works if the hidden matter sits right under each galaxy, heavier and more spread out. This simulation checks whether that happens on its own. Both sheets start almost smooth, each with its own <em>independent</em> random lumps. The two sheets interact only through gravity across the gap: no collisions, no light. Any lining-up has to come from gravity alone.</p>
+      <p>Our matter behaves like real gas: it can shed energy and sink to the centre of a well. You choose whether the <span class="hid">hidden matter</span> can do the same. Untick <strong>Gravity across the gap</strong> to run the control experiment.</p>
+    </div>
+    <div class="panel">
+      <div class="viewport ts-view">
+        <canvas id="tsCanvas" role="img" aria-label="Top-down view of our sheet's matter and the hidden sheet's matter, with the largest galaxies circled"></canvas>
+        <div class="legend">
+          <div><i style="background:#7FF5F0"></i>our matter (sheet 1)</div>
+          <div><i style="background:#A792F2"></i>hidden matter (sheet 2)</div>
+          <div><i style="background:transparent;border:1.5px solid #FFE7A8"></i>largest galaxies</div>
+        </div>
+        <div class="vp-buttons">
+          <button id="tsBoth" aria-pressed="true">Both</button>
+          <button id="tsOurs" aria-pressed="false">Ours</button>
+          <button id="tsHid" aria-pressed="false">Hidden</button>
+        </div>
+      </div>
+      <div class="side">
+        <div class="stats">
+          <div class="stat"><b id="tsTime">0</b><span>time</span></div>
+          <div class="stat"><b id="tsAlign">0.00</b><span>sheets lined up (0–1)</span></div>
+          <div class="stat"><b id="tsSize">–</b><span>hidden halo vs. galaxy size</span></div>
+          <div class="stat"><b id="tsFlat">–</b><span>rotation curve flatness</span></div>
+        </div>
+        <h3>Setup</h3>
+        <div class="ctrl">
+          <label for="tsMass">Hidden mass <output id="tsMassOut">5× ours</output></label>
+          <input type="range" id="tsMass" min="0.5" max="10" step="0.5" value="5">
+        </div>
+        <div class="ctrl">
+          <label for="tsGap">Gap between sheets <output id="tsGapOut">3 cells</output></label>
+          <input type="range" id="tsGap" min="0" max="30" step="1" value="3">
+          <span class="hint">The view is 128 cells wide.</span>
+        </div>
+        <label class="check"><input type="checkbox" id="tsCross" checked> Gravity across the gap</label>
+        <label class="check"><input type="checkbox" id="tsCool"> Hidden matter can cool and sink</label>
+        <span class="hint" style="font-size:12px;color:var(--space-muted)">Setup changes restart the run.</span>
+        <div class="row">
+          <button id="tsPause">Pause</button>
+          <button id="tsReset">Restart</button>
+        </div>
+      </div>
+    </div>
+    <div class="test">
+      <div class="chart-wrap">
+        <div class="ts-charts">
+          <div class="stack" style="gap:6px;min-width:0">
+            <h3>How lined up the sheets are</h3>
+            <canvas class="chart small" id="tsAlignChart" role="img" aria-label="Alignment between the two sheets over time"></canvas>
+          </div>
+          <div class="stack" style="gap:6px;min-width:0">
+            <h3>Rotation curve of the largest galaxy</h3>
+            <canvas class="chart small" id="tsRotChart" role="img" aria-label="Orbital speed around the largest galaxy with and without the hidden sheet"></canvas>
+          </div>
+        </div>
+        <div class="keys">
+          <span class="k-hid">with the hidden sheet</span>
+          <span class="k-vis">our matter alone</span>
+        </div>
+      </div>
+      <div class="side">
+        <h3>Readings</h3>
+        <div class="readout">
+          <div class="line"><span>Sheets lined up</span><span id="tsrAlign">–</span></div>
+          <div class="line"><span>Galaxy size (half its mass within)</span><span id="tsrVis">–</span></div>
+          <div class="line"><span>Hidden halo size</span><span id="tsrHid">–</span></div>
+          <div class="line"><span>Hidden-to-visible mass nearby</span><span id="tsrMass">–</span></div>
+          <div class="line"><span>Outer speed vs. peak</span><span id="tsrFlat">–</span></div>
+        </div>
+        <div class="verdict warn" id="tsVerdict">Waiting for galaxies to form…</div>
+      </div>
+    </div>
+  </section>
+
   <section class="stack">
     <div class="stack prose">
       <span class="eyebrow">What the simulation says</span>
@@ -394,7 +473,7 @@ footer { font-size: 14px; color: var(--muted); }
         <h3>Neighbours beside us on the sheet</h3>
         <p><strong>Too weak.</strong> Even with a neighbour's edge touching ours and a galaxy close to our edge, the extra pull is hundreds of thousands of times too small. A universe's mass is spread across billions of light-years, so very little of it is close to any one galaxy.</p>
         <p><strong>Wrong shape.</strong> Mass outside a galaxy pulls one side and pushes the other. By Gauss's law, the average over a sphere is zero. Dark matter's effect is a net inward pull, and that needs mass inside the orbit.</p>
-        <p><strong>The speed of gravity isn't the problem.</strong> Changes in a well travel at the speed of light. In 2017, gravitational waves and light from the same neutron-star collision arrived 1.7 seconds apart after 130 million years. But a well that was already in place before our universe formed would already reach us. So in this model, the horizon doesn't block the neighbours' pull. What rules them out is how weak and lopsided that pull is.</p>
+        <p><strong>The speed of gravity isn't the problem.</strong> Changes in a well travel at the speed of light. In 2017, gravitational waves and light from the same neutron-star collision arrived 1.7 seconds apart after 130 million years. But a well that was already in place before our universe formed would already reach us, and all the tests here put our galaxies inside the neighbours' wells from the start. Sitting in a well doesn't change orbits by itself: a whole galaxy in a smooth well falls together, and its stars can't feel it. Only differences in the well's slope from one side of a galaxy to the other change orbits, and that difference is what comes out far too weak and lopsided.</p>
         <p><strong>A reach limit makes it worse.</strong> With a gravity cutoff, the average pull turns outward, as if the neighbour had negative mass.</p>
         <p><strong>Overlapping doesn't save it.</strong> A neighbour expanded through our galaxy would need to be about 200,000 times denser than our universe. Even then the curve keeps climbing instead of staying flat, because evenly spread matter adds more pull the farther out you go. A flat curve needs matter that thins out with distance from each galaxy's centre.</p>
       </article>
@@ -403,6 +482,7 @@ footer { font-size: 14px; color: var(--muted); }
         <h3>Stacked sheets</h3>
         <p>A hidden sheet fits the measured curve to within a few km/s, but only under tight conditions. The sheets must be closer than about 10 kpc. The hidden galaxy must carry roughly 15 to 25 times the visible mass, spread about 15 times wider than our galaxy. An exact copy of our galaxy doesn't work.</p>
         <p>That is almost exactly the dark-matter halo astronomers already infer, just living on another sheet. Physicists call this idea brane-world "shadow matter." It matches lensing maps such as the Bullet Cluster's, because the hidden matter passes straight through collisions.</p>
+        <p><strong>And it forms on its own.</strong> In Simulation 2, gravity across the gap lines the two sheets up almost perfectly (about 0.9 on a 0–1 scale), even though they start with unrelated lumps. With gravity across the gap switched off, they stay unrelated (about 0). Our galaxies end up at the centres of hidden halos that are much wider, and the rotation curves come out clearly flatter than with our matter alone. It works best when the sheets are close, the hidden sheet is several times heavier, and the hidden matter can't cool. Hidden matter that cools collapses into compact clumps like ours and flattens the curves less.</p>
       </article>
       <article class="finding">
         <span class="pill good">Testable prediction</span>
@@ -412,19 +492,249 @@ footer { font-size: 14px; color: var(--muted); }
       </article>
       <article class="finding">
         <span class="pill warn">Plausible, not tested here</span>
-        <h3>Collisions making big bangs</h3>
-        <p>On the sheet, expanding universes keep running into each other, and each collision seeds a compact newborn that expands in turn. The sheet becomes a shifting pattern of strong young wells and weak old ones, which looks like a neural network or a choppy sea.</p>
+        <h3>Extreme density making big bangs</h3>
+        <p>On the sheet, gravity pulls matter from the expanding universes into dense knots, and any knot dense enough ignites into a newborn universe that expands in turn. The sheet becomes a shifting pattern of strong young wells and weak old ones, which looks like a neural network or a choppy sea. How often this happens depends entirely on the density threshold, which no one knows.</p>
         <p>A collision between bubble universes would leave a round, disc-shaped mark on the CMB. Searches of WMAP data (Feeney et al., 2011) found no convincing signal yet.</p>
       </article>
     </div>
   </section>
 
   <footer class="prose stack">
-    <p>How it works: Simulation 1 uses softened Newtonian gravity on a wrap-around sheet in made-up units, so it shows behaviour, not real scales. The tests use real SI values. The galaxy has 6 × 10¹⁰ solar masses of visible matter (Hernquist profile, 3 kpc scale). In Test 1 each universe is a flat disc of 1,200 mass points, and the gravity reach uses a Yukawa fall-off. In Test 2 the hidden galaxy is a Hernquist sphere offset by the sheet separation. The "measured" curve is a stylised spiral-galaxy curve that flattens near 200 km/s, not a specific dataset.</p>
+    <p>How it works: Simulation 1 uses softened Newtonian gravity on a wrap-around sheet in made-up units, so it shows behaviour, not real scales. The tests use real SI values. The galaxy has 6 × 10¹⁰ solar masses of visible matter (Hernquist profile, 3 kpc scale). In Test 1 each universe is a flat disc of 1,200 mass points, and the gravity reach uses a Yukawa fall-off. In Test 2 the hidden galaxy is a Hernquist sphere offset by the sheet separation. Simulation 2 is a particle-mesh simulation: 3,136 particles per sheet on a 128 × 128 wrap-around grid, with softened gravity within each sheet and across the gap. Expansion is modelled as braking that fades over time, and gas cooling as friction against the local flow. It runs in made-up units, and anything smaller than about one grid cell isn't resolved. The "measured" curve is a stylised spiral-galaxy curve that flattens near 200 km/s, not a specific dataset.</p>
   </footer>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* TWOSHEET-BEGIN */
+// Two stacked sheets of matter on a periodic grid. Gravity acts within each sheet and across the gap between them.
+// Particle-mesh solver: matter is spread onto a grid, the pull is found with FFTs, then read back at each particle.
+// Space expands: positions are measured on a grid that stretches with space (scale factor a), so as space grows the
+// pull between lumps weakens (by 1/a³) and the expansion brakes motions (2H). Lumps stay a spread-out web.
+const TwoSheet = (() => {
+  const N = 128, LOG = 7; // grid cells per side (box is N cells wide)
+
+  function fft1(re, im, inv) { // in-place radix-2 FFT of length N
+    for (let i = 1, j = 0; i < N; i++) {
+      let bit = N >> 1;
+      for (; j & bit; bit >>= 1) j ^= bit;
+      j ^= bit;
+      if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; }
+    }
+    for (let len = 2; len <= N; len <<= 1) {
+      const ang = (inv ? 2 : -2) * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang);
+      for (let i = 0; i < N; i += len) {
+        let cr = 1, ci = 0;
+        for (let k = 0; k < len / 2; k++) {
+          const a = i + k, b = a + len / 2, xr = re[b] * cr - im[b] * ci, xi = re[b] * ci + im[b] * cr;
+          re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi;
+          const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t;
+        }
+      }
+    }
+  }
+  const rowR = new Float64Array(N), rowI = new Float64Array(N);
+  function fft2(re, im, inv) {
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) { rowR[x] = re[y * N + x]; rowI[x] = im[y * N + x]; }
+      fft1(rowR, rowI, inv);
+      for (let x = 0; x < N; x++) { re[y * N + x] = rowR[x]; im[y * N + x] = rowI[x]; }
+    }
+    for (let x = 0; x < N; x++) {
+      for (let y = 0; y < N; y++) { rowR[y] = re[y * N + x]; rowI[y] = im[y * N + x]; }
+      fft1(rowR, rowI, inv);
+      for (let y = 0; y < N; y++) { re[y * N + x] = rowR[y]; im[y * N + x] = rowI[y]; }
+    }
+    if (inv) { const s = 1 / (N * N); for (let i = 0; i < N * N; i++) { re[i] *= s; im[i] *= s; } }
+  }
+
+  function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  const wrap = (v) => ((v % N) + N) % N;
+
+  function create(opts) {
+    const o = Object.assign({ perSide: 56, hiddenMass: 5, gap: 3, cross: true, coolVisible: 2.0, coolHidden: 0, G: 2000, tau: 3.8, soft: 1.0, seed: 1 }, opts);
+    const n = o.perSide * o.perSide, sp = N / o.perSide;
+    // independent random starting lumps on each sheet: alignment can only come from gravity across the gap
+    function sheet(seed, mass) {
+      const r = rng(seed), x = new Float64Array(n), y = new Float64Array(n), vx = new Float64Array(n), vy = new Float64Array(n);
+      for (let j = 0, k = 0; j < o.perSide; j++) for (let i = 0; i < o.perSide; i++, k++) {
+        x[k] = wrap((i + 0.5) * sp + (r() - 0.5) * sp * 0.9); y[k] = wrap((j + 0.5) * sp + (r() - 0.5) * sp * 0.9);
+      }
+      return { x, y, vx, vy, m: mass / n };
+    }
+    const s = { o, t: 0, vis: sheet(o.seed * 7919 + 1, 1), hid: sheet(o.seed * 104729 + 2, o.hiddenMass),
+      rhoV: new Float64Array(N * N), rhoH: new Float64Array(N * N), kS: null, kC: null, history: [] };
+    s.f = {}; for (const k of ["vSelfX", "vSelfY", "vTotX", "vTotY", "hTotX", "hTotY", "pxV", "pyV"]) s.f[k] = new Float64Array(N * N);
+    buildKernels(s);
+    return s;
+  }
+  function kernelFT(depth2, soft) {
+    const re = new Float64Array(N * N), im = new Float64Array(N * N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const dx = x <= N / 2 ? x : x - N, dy = y <= N / 2 ? y : y - N;
+      re[y * N + x] = -1 / Math.sqrt(dx * dx + dy * dy + depth2 + soft * soft);
+    }
+    fft2(re, im, false);
+    return { re, im };
+  }
+  function buildKernels(s) { s.kS = kernelFT(0, s.o.soft); s.kC = kernelFT(s.o.gap * s.o.gap, s.o.soft); }
+
+  function deposit(p, rho, fx, fy) { // cloud-in-cell; optionally also deposits momentum
+    rho.fill(0); if (fx) { fx.fill(0); fy.fill(0); }
+    for (let k = 0; k < p.x.length; k++) {
+      const gx = p.x[k] - 0.5, gy = p.y[k] - 0.5, i0 = Math.floor(gx), j0 = Math.floor(gy), tx = gx - i0, ty = gy - j0;
+      const i1 = wrap(i0 + 1), j1 = wrap(j0 + 1), ii = wrap(i0), jj = wrap(j0);
+      const w = [[ii, jj, (1 - tx) * (1 - ty)], [i1, jj, tx * (1 - ty)], [ii, j1, (1 - tx) * ty], [i1, j1, tx * ty]];
+      for (const [a, b, ww] of w) { const c = b * N + a; rho[c] += ww * p.m; if (fx) { fx[c] += ww * p.m * p.vx[k]; fy[c] += ww * p.m * p.vy[k]; } }
+    }
+  }
+  function interp(field, x, y) {
+    const gx = x - 0.5, gy = y - 0.5, i0 = Math.floor(gx), j0 = Math.floor(gy), tx = gx - i0, ty = gy - j0;
+    const ii = wrap(i0), jj = wrap(j0), i1 = wrap(i0 + 1), j1 = wrap(j0 + 1);
+    return field[jj * N + ii] * (1 - tx) * (1 - ty) + field[jj * N + i1] * tx * (1 - ty) + field[j1 * N + ii] * (1 - tx) * ty + field[j1 * N + i1] * tx * ty;
+  }
+  function gradient(phi, gx, gy, G) { // pull = -G * slope of the well
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      gx[y * N + x] = -G * (phi[y * N + wrap(x + 1)] - phi[y * N + wrap(x - 1)]) / 2;
+      gy[y * N + x] = -G * (phi[wrap(y + 1) * N + x] - phi[wrap(y - 1) * N + x]) / 2;
+    }
+  }
+  const A = { re: new Float64Array(N * N), im: new Float64Array(N * N) }, B = { re: new Float64Array(N * N), im: new Float64Array(N * N) };
+  const T = { re: new Float64Array(N * N), im: new Float64Array(N * N) };
+  function conv(out, a, k, b, kb) { // out = a*k (+ b*kb), back in real space
+    for (let i = 0; i < N * N; i++) {
+      let r = a.re[i] * k.re[i] - a.im[i] * k.im[i], m = a.re[i] * k.im[i] + a.im[i] * k.re[i];
+      if (b) { r += b.re[i] * kb.re[i] - b.im[i] * kb.im[i]; m += b.re[i] * kb.im[i] + b.im[i] * kb.re[i]; }
+      T.re[i] = r; T.im[i] = m;
+    }
+    T.re[0] = 0; T.im[0] = 0; // only differences from the average density pull
+    fft2(T.re, T.im, true);
+    out.set(T.re);
+  }
+  const phi = new Float64Array(N * N);
+  function forces(s) {
+    const { o, f } = s;
+    deposit(s.vis, s.rhoV, f.pxV, f.pyV); deposit(s.hid, s.rhoH);
+    A.re.set(s.rhoV); A.im.fill(0); fft2(A.re, A.im, false);
+    B.re.set(s.rhoH); B.im.fill(0); fft2(B.re, B.im, false);
+    s.ftV = A; s.ftH = B;
+    conv(phi, A, s.kS); gradient(phi, f.vSelfX, f.vSelfY, o.G);                          // ordinary matter's own pull
+    conv(phi, A, s.kS, o.cross ? B : null, s.kC); gradient(phi, f.vTotX, f.vTotY, o.G);   // + the hidden sheet across the gap
+    conv(phi, B, s.kS, o.cross ? A : null, s.kC); gradient(phi, f.hTotX, f.hTotY, o.G);
+  }
+  function move(s, p, gx, gy, dt, cool, px, py, rho) {
+    const { o } = s, mean = 1 / (N * N) * (p.m * p.x.length);
+    const a = scaleFactor(s), H = (2 / 3) / (o.tau + s.t), weak = 1 / (a * a * a), drag = 2 * H;
+    for (let k = 0; k < p.x.length; k++) {
+      let ax = weak * interp(gx, p.x[k], p.y[k]) - drag * p.vx[k], ay = weak * interp(gy, p.x[k], p.y[k]) - drag * p.vy[k];
+      if (cool > 0 && px) { // gas cooling: random motions die away where matter is dense, so it sinks to the centre
+        const r = interp(rho, p.x[k], p.y[k]);
+        if (r > 1e-12) {
+          const lvx = interp(px, p.x[k], p.y[k]) / r, lvy = interp(py, p.x[k], p.y[k]) / r, g = cool * Math.min(4, r / mean);
+          ax -= g * (p.vx[k] - lvx); ay -= g * (p.vy[k] - lvy);
+        }
+      }
+      p.vx[k] += ax * dt; p.vy[k] += ay * dt;
+      p.x[k] = wrap(p.x[k] + p.vx[k] * dt); p.y[k] = wrap(p.y[k] + p.vy[k] * dt);
+    }
+  }
+  const scaleFactor = (s) => Math.pow(1 + s.t / s.o.tau, 2 / 3); // how much space has stretched since the start
+  const hpx = new Float64Array(N * N), hpy = new Float64Array(N * N);
+  function step(s, dt) {
+    forces(s);
+    move(s, s.vis, s.f.vTotX, s.f.vTotY, dt, s.o.coolVisible, s.f.pxV, s.f.pyV, s.rhoV);
+    if (s.o.coolHidden > 0) deposit(s.hid, s.rhoH, hpx, hpy);
+    move(s, s.hid, s.f.hTotX, s.f.hTotY, dt, s.o.coolHidden, hpx, hpy, s.rhoH);
+    s.t += dt;
+  }
+
+  // ---------- measurements ----------
+  const smV = new Float64Array(N * N), smH = new Float64Array(N * N);
+  function smooth(out, ft, sigma) {
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const kx = 2 * Math.PI * (x <= N / 2 ? x : x - N) / N, ky = 2 * Math.PI * (y <= N / 2 ? y : y - N) / N, w = Math.exp(-(kx * kx + ky * ky) * sigma * sigma / 2), i = y * N + x;
+      T.re[i] = ft.re[i] * w; T.im[i] = ft.im[i] * w;
+    }
+    fft2(T.re, T.im, true); out.set(T.re);
+  }
+  function alignment(s) { // correlation between the two sheets' lumps (0 = unrelated, 1 = identical pattern)
+    smooth(smV, s.ftV, 2); smooth(smH, s.ftH, 2);
+    let ma = 0, mb = 0; for (let i = 0; i < N * N; i++) { ma += smV[i]; mb += smH[i]; } ma /= N * N; mb /= N * N;
+    let sab = 0, saa = 0, sbb = 0;
+    for (let i = 0; i < N * N; i++) { const a = smV[i] - ma, b = smH[i] - mb; sab += a * b; saa += a * a; sbb += b * b; }
+    return sab / Math.sqrt(saa * sbb + 1e-30);
+  }
+  function galaxies(s, count) { // brightest clumps of ordinary matter
+    smooth(smV, s.ftV, 1.5);
+    const peaks = [];
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const v = smV[y * N + x]; let top = true;
+      for (let dy = -3; dy <= 3 && top; dy++) for (let dx = -3; dx <= 3; dx++) if ((dx || dy) && smV[wrap(y + dy) * N + wrap(x + dx)] > v) { top = false; break; }
+      if (top) peaks.push({ x: x + 0.5, y: y + 0.5, v });
+    }
+    return peaks.sort((a, b) => b.v - a.v).slice(0, count);
+  }
+  const md = (a, b) => { let d = a - b; d -= N * Math.round(d / N); return d; };
+  function centre(p, gx, gy, R) { // centre of mass of p near (gx, gy), refined twice
+    let cx = gx, cy = gy;
+    for (let it = 0; it < 3; it++) {
+      let sx = 0, sy = 0, c = 0;
+      for (let k = 0; k < p.x.length; k++) { const dx = md(p.x[k], cx), dy = md(p.y[k], cy); if (dx * dx + dy * dy < R * R) { sx += dx; sy += dy; c++; } }
+      if (c) { cx = wrap(cx + sx / c); cy = wrap(cy + sy / c); }
+    }
+    return [cx, cy];
+  }
+  function halfRadius(p, cx, cy, R) {
+    const d = [];
+    for (let k = 0; k < p.x.length; k++) { const dx = md(p.x[k], cx), dy = md(p.y[k], cy), r = Math.hypot(dx, dy); if (r < R) d.push(r); }
+    d.sort((a, b) => a - b);
+    return { half: d.length ? d[Math.floor(d.length / 2)] : 0, mass: d.length * p.m };
+  }
+  function rotation(s, cx, cy, rMax) { // orbital speed around a galaxy, from the actual pull on the sheet
+    const out = { r: [], tot: [], self: [] };
+    for (let r = 0.5; r <= rMax; r += 0.5) {
+      let at = 0, as = 0;
+      for (let k = 0; k < 48; k++) {
+        const a = (k / 48) * 2 * Math.PI, ux = Math.cos(a), uy = Math.sin(a), x = wrap(cx + r * ux), y = wrap(cy + r * uy);
+        at += -(interp(s.f.vTotX, x, y) * ux + interp(s.f.vTotY, x, y) * uy);
+        as += -(interp(s.f.vSelfX, x, y) * ux + interp(s.f.vSelfY, x, y) * uy);
+      }
+      out.r.push(r); out.tot.push(Math.sqrt(Math.max(0, r * at / 48))); out.self.push(Math.sqrt(Math.max(0, r * as / 48)));
+    }
+    return out;
+  }
+  function measure(s, R = 12) {
+    if (!s.ftV) forces(s);
+    const al = alignment(s), gal = galaxies(s, 12);
+    const stats = gal.map((g) => {
+      const [cx, cy] = centre(s.vis, g.x, g.y, 4);
+      const v = halfRadius(s.vis, cx, cy, R), h = halfRadius(s.hid, cx, cy, R);
+      // offset between the galaxy and the centre of the hidden matter around it
+      const [hx, hy] = centre(s.hid, cx, cy, 6);
+      return { cx, cy, visHalf: v.half, hidHalf: h.half, visMass: v.mass, hidMass: h.mass, offset: Math.hypot(md(hx, cx), md(hy, cy)) };
+    });
+    return { t: s.t, alignment: al, galaxies: stats };
+  }
+  // Generic well map for other simulations: positions in grid units, returns the well (phi) and its pull (gx, gy), G = 1.
+  const pmRho = new Float64Array(N * N), pmPhi = new Float64Array(N * N), pmGx = new Float64Array(N * N), pmGy = new Float64Array(N * N);
+  const pmKernels = {};
+  function wellField(xs, ys, ms, count, soft) {
+    pmKernels[soft] = pmKernels[soft] || kernelFT(0, soft);
+    pmRho.fill(0);
+    for (let k = 0; k < count; k++) { // mass-weighted cloud-in-cell
+      const gx = xs[k] - 0.5, gy = ys[k] - 0.5, i0 = Math.floor(gx), j0 = Math.floor(gy), tx = gx - i0, ty = gy - j0;
+      const ii = wrap(i0), jj = wrap(j0), i1 = wrap(i0 + 1), j1 = wrap(j0 + 1), m = ms[k];
+      pmRho[jj * N + ii] += m * (1 - tx) * (1 - ty); pmRho[jj * N + i1] += m * tx * (1 - ty); pmRho[j1 * N + ii] += m * (1 - tx) * ty; pmRho[j1 * N + i1] += m * tx * ty;
+    }
+    A.re.set(pmRho); A.im.fill(0); fft2(A.re, A.im, false);
+    conv(pmPhi, A, pmKernels[soft]); gradient(pmPhi, pmGx, pmGy, 1);
+    return { phi: pmPhi, gx: pmGx, gy: pmGy, rho: pmRho };
+  }
+  return { N, create, step, measure, rotation, buildKernels, galaxies, centre, wellField, interp, scaleFactor };
+})();
+if (typeof module !== "undefined") module.exports = TwoSheet;
+/* TWOSHEET-END */
+</script>
 <script>
 (() => {
 "use strict";
@@ -437,149 +747,143 @@ const fmtA = (a) => (a === 0 ? "0" : fmtSci(a) + " m/s²");
 const bindOut = (id, fmt, cb) => { const el = $(id), out = $(id + "Out"); const f = () => { out.textContent = fmt(+el.value); cb && cb(); }; el.addEventListener("input", f); out.textContent = fmt(+el.value); };
 
 /* ================= Simulation 1: the sheet ================= */
-// Each universe is a cloud of internal weights, heavier near its centre and lighter toward its edge, not one point.
-// Every universe expands: its weights spread out over time, so the pull at its centre keeps getting weaker.
-// Nothing collapses or merges. When two expanding universes overlap far enough, their colliding matter forms a
-// dense new universe at the contact point (a big bang), which then expands in turn.
-// Total mass is conserved: nothing is created except by the "Add a universe" button.
-const L = 240, HALF = L / 2, G = 420, DEPTH = 9, NGRID = 80, TRAIL = 40, R0 = 7.5, SPIN = 0.25;
-const LAYOUT = (() => { // [x, y, share of mass] on a unit disc; shares add up to 1
-  const out = [[0, 0, 0.28]];
-  for (let k = 0; k < 4; k++) { const a = (k / 4) * 2 * Math.PI; out.push([0.3 * Math.cos(a), 0.3 * Math.sin(a), 0.07]); }
-  for (let k = 0; k < 8; k++) { const a = (k / 8) * 2 * Math.PI + Math.PI / 8; out.push([0.66 * Math.cos(a), 0.66 * Math.sin(a), 0.055]); }
-  return out;
-})();
-const NW = LAYOUT.length;
-const sim = { bodies: [], bangs: 0, running: !reduceMotion, rings: [], flat: true, t: 0 };
-const radiusOf = (m, scale = 1) => R0 * Math.sqrt(m) * scale;
-const DRAG = 0.15, THIN = 0.005; // THIN: mass per area below which a universe has spread too thin to hold together
-let nextId = 1;
-const blobOf = (b) => 0.3 * b.r; // each weight is a soft blob, so overlapping universes never form a point singularity
-const wrap = (v) => ((v + HALF) % L + L) % L - HALF;
-const mi = (d) => d - L * Math.round(d / L); // minimum-image separation
-const reachVal = () => (+$("reach").value >= 100 ? Infinity : +$("reach").value);
-function reachWeight(gap, reach) {
-  if (reach === Infinity || gap <= reach) return 1;
-  return Math.max(0, 1 - (gap - reach) / (0.25 * reach + 6));
-}
-function weightsOf(b) { // world offsets of a body's internal weights (they turn slowly with the universe)
-  const c = Math.cos(b.phase), s = Math.sin(b.phase);
-  return LAYOUT.map(([x, y, w]) => [b.r * (x * c - y * s), b.r * (x * s + y * c), w * b.m]);
-}
-function addBody(o) {
-  const m = o.m ?? (0.35 + Math.random() * 2.2);
-  const scale = o.scale ?? 1;
-  const b = { id: nextId++, x: o.x, y: o.y, vx: o.vx ?? (Math.random() - 0.5) * 6, vy: o.vy ?? (Math.random() - 0.5) * 6, m, scale, r: radiusOf(m, scale), age: 0, lastBang: -99, phase: Math.random() * 6.28, ours: !!o.ours, born: 0, mesh: null, edge: null, trail: [], trailLine: null };
-  sim.bodies.push(b);
-  return b;
-}
-function randomFreeSpot(m) {
-  const r = radiusOf(m ?? 1.5);
-  for (let k = 0; k < 60; k++) {
-    const x = (Math.random() - 0.5) * L, y = (Math.random() - 0.5) * L;
-    if (sim.bodies.every((b) => Math.hypot(mi(b.x - x), mi(b.y - y)) > b.r + r + 4)) return { x, y, m };
-  }
-  return { x: (Math.random() - 0.5) * L, y: (Math.random() - 0.5) * L, m };
-}
+// Each universe is a collection of weights that move freely, not one rigid object. Every universe starts with its own
+// big bang: weights packed densely at the centre and thinly at the edge, all flying outward, so its edge grows over time.
+// Every weight pulls on every other weight, in its own universe and in the others. Neighbours can drag a universe's thin
+// outer matter and dent or stretch its shape. Where dense matter from two universes piles into the same spot, it forms a
+// new universe with its own big bang. Total mass never changes.
+const GN = TwoSheet.N, L = 240, HALF = L / 2, SC = L / GN; // the sheet is GN grid cells wide, drawn L units wide
+const NGRID = 80, MAXP = 3200, PER_UNI = 64, R_START = 3.2, G1 = 9, SOFT1 = 1.0, BINS = 12;
+const P = { x: new Float64Array(MAXP), y: new Float64Array(MAXP), vx: new Float64Array(MAXP), vy: new Float64Array(MAXP), m: new Float64Array(MAXP), own: new Int32Array(MAXP), n: 0 };
+const sim = { unis: new Map(), bangs: 0, running: !reduceMotion, flat: true, t: 0, nextId: 1, field: null, rings: [], our0: null };
+const gw = (v) => ((v % GN) + GN) % GN;
+const md = (d) => d - GN * Math.round(d / GN); // shortest separation across the wrap-around sheet
 function logEvent(msg) {
   const el = $("log"), d = document.createElement("div");
   d.textContent = msg; el.prepend(d);
   while (el.children.length > 4) el.lastChild.remove();
 }
-// pull of body b's weights on a point at (x, y), with an extra softening sp for the receiving weight
-function pullFrom(b, W, x, y, sp) {
-  let ax = 0, ay = 0;
-  const s2 = blobOf(b) ** 2 + sp * sp;
-  for (const [ox, oy, wm] of W) {
-    const dx = mi(b.x + ox - x), dy = mi(b.y + oy - y), r2 = dx * dx + dy * dy + s2, inv = G * wm / (r2 * Math.sqrt(r2));
-    ax += dx * inv; ay += dy * inv;
+// A new universe: its own big bang at (cx, cy). Weights are densest at the centre; each flies outward at a speed that
+// grows with its distance from the centre, scaled against the speed needed to escape the universe's own pull.
+function bigBang(cx, cy, mass, opts = {}) {
+  const id = sim.nextId++, n = opts.n ?? PER_UNI, R = opts.R ?? R_START, kick = +$("expand").value;
+  const u = { id, ours: !!opts.ours, born: opts.flash ? 2.5 : 0, age: 0, cx, cy, edge: null, outline: null, r: R, mass };
+  sim.unis.set(id, u);
+  const esc = Math.sqrt(2 * G1 * mass / R);
+  for (let k = 0; k < n && P.n < MAXP; k++) {
+    const q = Math.random(), r = R * Math.max(0.04, q * q), a = Math.random() * 2 * Math.PI, i = P.n++;
+    P.x[i] = gw(cx + r * Math.cos(a)); P.y[i] = gw(cy + r * Math.sin(a));
+    const v = kick * esc * (r / R);
+    P.vx[i] = (opts.vx ?? 0) + v * Math.cos(a) + (Math.random() - 0.5) * 0.1 * esc;
+    P.vy[i] = (opts.vy ?? 0) + v * Math.sin(a) + (Math.random() - 0.5) * 0.1 * esc;
+    P.m[i] = mass / n; P.own[i] = id;
   }
-  return [ax, ay];
+  return u;
+}
+function freeSpot() {
+  for (let k = 0; k < 80; k++) {
+    const x = Math.random() * GN, y = Math.random() * GN;
+    let ok = true;
+    for (const u of sim.unis.values()) if (Math.hypot(md(u.cx - x), md(u.cy - y)) < u.r + 9) { ok = false; break; }
+    if (ok) return [x, y];
+  }
+  return [Math.random() * GN, Math.random() * GN];
 }
 function step(dt) {
-  const B = sim.bodies, n = B.length, H = DRAG, reach = reachVal(), E = +$("hub").value;
+  sim.field = TwoSheet.wellField(P.x, P.y, P.m, P.n, SOFT1);
+  const f = sim.field;
+  for (let i = 0; i < P.n; i++) {
+    P.vx[i] += G1 * TwoSheet.interp(f.gx, P.x[i], P.y[i]) * dt;
+    P.vy[i] += G1 * TwoSheet.interp(f.gy, P.x[i], P.y[i]) * dt;
+    P.x[i] = gw(P.x[i] + P.vx[i] * dt); P.y[i] = gw(P.y[i] + P.vy[i] * dt);
+  }
   sim.t += dt;
-  for (const b of B) { b.phase += SPIN * dt; b.age += dt; b.scale += E * dt; b.r = radiusOf(b.m, b.scale); }
-  const Ws = B.map(weightsOf);
-  const ax = new Float64Array(n), ay = new Float64Array(n);
-  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
-    const dx = mi(B[j].x - B[i].x), dy = mi(B[j].y - B[i].y), d = Math.hypot(dx, dy);
-    const w = reachWeight(d - B[i].r - B[j].r, reach); if (!w) continue;
-    let fx = 0, fy = 0; // total force of j on i, summed weight by weight
-    if (d > 3 * (B[i].r + B[j].r)) { // far apart: the clouds act like points
-      const r2 = d * d, inv = G * B[i].m * B[j].m / (r2 * Math.sqrt(r2)); fx = dx * inv; fy = dy * inv;
-    } else {
-      for (const [ox, oy, wm] of Ws[i]) { const [px, py] = pullFrom(B[j], Ws[j], B[i].x + ox, B[i].y + oy, blobOf(B[i])); fx += px * wm; fy += py * wm; }
-    }
-    ax[i] += w * fx / B[i].m; ay[i] += w * fy / B[i].m;
-    ax[j] -= w * fx / B[j].m; ay[j] -= w * fy / B[j].m;
-  }
-  for (let i = 0; i < n; i++) {
-    const b = B[i];
-    b.vx += (ax[i] - H * b.vx) * dt; b.vy += (ay[i] - H * b.vy) * dt;
-    const sp = Math.hypot(b.vx, b.vy); if (sp > 90) { b.vx *= 90 / sp; b.vy *= 90 / sp; }
-    b.x = wrap(b.x + b.vx * dt); b.y = wrap(b.y + b.vy * dt);
-    if (b.born > 0) b.born = Math.max(0, b.born - dt);
-  }
-  // Collisions: expanding universes that overlap far enough make a big bang where their matter meets.
-  const trig = +$("thr").value / 100, born = [];
-  for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) {
-    const a = B[i], c = B[j];
-    if (sim.t - a.lastBang < 3 || sim.t - c.lastBang < 3 || a.age < 3 || c.age < 3) continue;
-    const key = a.id < c.id ? a.id + "-" + c.id : c.id + "-" + a.id;
-    if (sim.collided.has(key)) continue; // each pair of universes collides once
-    const dx = mi(c.x - a.x), dy = mi(c.y - a.y), d = Math.hypot(dx, dy), depth = a.r + c.r - d;
-    if (depth < trig * Math.min(a.r, c.r) || B.length + born.length >= 80) continue;
-    sim.collided.add(key);
-    const ux = dx / (d || 1), uy = dy / (d || 1), along = a.r - depth / 2; // middle of the overlap zone
-    const takeA = 0.15 * a.m, takeB = 0.15 * c.m, m = takeA + takeB;
-    if (m < 0.2) continue; // too little matter meets to ignite
-    a.m -= takeA; c.m -= takeB; a.lastBang = c.lastBang = sim.t;
-    born.push({ x: wrap(a.x + ux * along), y: wrap(a.y + uy * along), vx: (a.vx + c.vx) / 2, vy: (a.vy + c.vy) / 2, m, scale: 0.3 });
-    sim.bangs++;
-    logEvent(`Big bang #${sim.bangs}: two universes collided and formed a new one (${m.toFixed(2)} mass).`);
-    if (a.ours || c.ours) logEvent("Our universe was part of that collision.");
-  }
-  for (const e of born) { const nb = addBody(e); nb.born = 2.5; nb.lastBang = sim.t; spawnRing(nb); }
-  // A universe spread too thin dissolves into its nearest neighbour (its mass is handed over, not lost).
-  for (let i = B.length - 1; i >= 0; i--) {
-    const f = B[i]; if (f.ours || B.length < 3 || (f.m > 0.06 && f.m / (f.r * f.r) > THIN)) continue;
-    let near = null, bd = Infinity;
-    for (const o of B) { if (o === f) continue; const d = Math.hypot(mi(o.x - f.x), mi(o.y - f.y)); if (d < bd) { bd = d; near = o; } }
-    near.m += f.m; removeBody(f); B.splice(i, 1);
-    if (Math.random() < 0.25) logEvent("An old universe spread too thin and dissolved into its neighbour.");
-  }
-  for (const b of B) b.r = radiusOf(b.m, b.scale);
 }
-function tideOnOurs() {
-  const o = sim.bodies.find((b) => b.ours);
-  if (!o) return null;
-  const reach = reachVal();
-  let txx = 0, txy = 0, tyy = 0, near = 0;
-  for (const b of sim.bodies) {
-    if (b === o) continue;
-    const w = reachWeight(Math.hypot(mi(b.x - o.x), mi(b.y - o.y)) - b.r - o.r, reach); if (!w) continue;
-    near++;
-    const s2 = blobOf(b) ** 2;
-    for (const [ox, oy, wm] of weightsOf(b)) { // every internal weight pulls separately: closer weights count for more
-      const dx = mi(b.x + ox - o.x), dy = mi(b.y + oy - o.y), d = Math.sqrt(dx * dx + dy * dy + s2), nx = dx / d, ny = dy / d, k = w * G * wm / (d * d * d);
-      txx += k * (3 * nx * nx - 1); txy += k * 3 * nx * ny; tyy += k * (3 * ny * ny - 1);
+// Shape of each universe: centre of mass, plus how far its matter reaches in each direction.
+function measureShapes() {
+  const acc = new Map();
+  for (const u of sim.unis.values()) acc.set(u.id, { sx: 0, sy: 0, m: 0, refx: null, refy: null, pts: [] });
+  for (let i = 0; i < P.n; i++) {
+    const a = acc.get(P.own[i]); if (!a) continue;
+    if (a.refx === null) { a.refx = P.x[i]; a.refy = P.y[i]; }
+    const dx = md(P.x[i] - a.refx), dy = md(P.y[i] - a.refy);
+    a.sx += dx * P.m[i]; a.sy += dy * P.m[i]; a.m += P.m[i]; a.pts.push(i);
+  }
+  for (const u of sim.unis.values()) {
+    const a = acc.get(u.id);
+    if (!a || a.pts.length < 3) { removeUni(u); continue; }
+    u.cx = gw(a.refx + a.sx / a.m); u.cy = gw(a.refy + a.sy / a.m); u.mass = a.m;
+    const perBin = Array.from({ length: BINS }, () => []);
+    let inner = 0, sxx = 0, syy = 0, sxy = 0, mm = 0;
+    const all = [];
+    for (const i of a.pts) {
+      const dx = md(P.x[i] - u.cx), dy = md(P.y[i] - u.cy), r = Math.hypot(dx, dy);
+      all.push(r);
+      perBin[Math.floor(((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI)) * BINS) % BINS].push(r);
+      if (r < R_START * 0.5) inner += P.m[i];
+    }
+    const cut = all.slice().sort((p, q) => p - q)[Math.floor(all.length * 0.85)];
+    for (const i of a.pts) { // spread of the bulk of the matter, to measure how stretched the universe is
+      const dx = md(P.x[i] - u.cx), dy = md(P.y[i] - u.cy); if (Math.hypot(dx, dy) > cut) continue;
+      sxx += P.m[i] * dx * dx; syy += P.m[i] * dy * dy; sxy += P.m[i] * dx * dy; mm += P.m[i];
+    }
+    const tr = (sxx + syy) / 2, df = Math.sqrt(((sxx - syy) / 2) ** 2 + sxy * sxy), l1 = tr + df, l2 = Math.max(0, tr - df);
+    u.stretch = l1 > 0 ? 1 - Math.sqrt(l2 / l1) : 0;
+    // the edge in each direction: where three quarters of the matter heading that way has been passed
+    const reach = perBin.map((rs) => { if (!rs.length) return 0; rs.sort((p, q) => p - q); return Math.min(cut * 1.3, rs[Math.floor(rs.length * 0.75)]); });
+    for (let pass = 0; pass < 3; pass++) for (let k = 0; k < BINS; k++) if (!reach[k]) reach[k] = (reach[(k + BINS - 1) % BINS] + reach[(k + 1) % BINS]) / 2 || cut * 0.6;
+    const sm = reach.map((v, k) => (reach[(k + BINS - 1) % BINS] + 2 * v + reach[(k + 1) % BINS]) / 4);
+    u.outline = sm; u.r = sm.reduce((s, v) => s + v, 0) / BINS; u.inner = inner; u.count = a.pts.length;
+  }
+}
+// Big bangs are set off by density alone: any small patch where matter packs tighter than the threshold ignites and
+// becomes a new universe, whatever brought the matter there. Matter of universes that are still young (flying apart
+// from their own big bang) can't ignite again yet.
+const YOUNG = 4;
+function densityBangs() {
+  const thr = +$("thr").value * sim.coreRef, cellSize = 2, cells = new Map();
+  for (let i = 0; i < P.n; i++) {
+    const own = sim.unis.get(P.own[i]);
+    if (!own || own.age < YOUNG) continue;
+    const key = Math.floor(P.x[i] / cellSize) + "," + Math.floor(P.y[i] / cellSize);
+    let c = cells.get(key); if (!c) cells.set(key, (c = { idx: [], owners: new Map(), m: 0 }));
+    c.idx.push(i); c.m += P.m[i]; c.owners.set(P.own[i], (c.owners.get(P.own[i]) || 0) + P.m[i]);
+  }
+  sim.peak = 0;
+  for (const c of cells.values()) {
+    sim.peak = Math.max(sim.peak, c.m / sim.coreRef);
+    if (c.m < thr || c.idx.length < 4 || sim.unis.size >= 50) continue;
+    const parents = [...c.owners.keys()].map((id) => sim.unis.get(id)).filter(Boolean);
+    const [mainId, mainM] = [...c.owners.entries()].sort((p, q) => q[1] - p[1])[0];
+    const rebounce = mainM >= 0.8 * c.m; // almost all one universe's matter: that universe fell back in on itself and re-ignites
+    let sx = 0, sy = 0, svx = 0, svy = 0, ref = c.idx[0];
+    for (const i of c.idx) { sx += md(P.x[i] - P.x[ref]) * P.m[i]; sy += md(P.y[i] - P.y[ref]) * P.m[i]; svx += P.vx[i] * P.m[i]; svy += P.vy[i] * P.m[i]; }
+    const cx = gw(P.x[ref] + sx / c.m), cy = gw(P.y[ref] + sy / c.m), vx = svx / c.m, vy = svy / c.m;
+    let u;
+    if (rebounce) { u = sim.unis.get(mainId); u.born = 2.5; u.age = 0; }
+    else { u = { id: sim.nextId++, ours: false, born: 2.5, age: 0, cx, cy, r: 1, mass: c.m, outline: null, edge: null }; sim.unis.set(u.id, u); }
+    const id = u.id;
+    const esc = Math.sqrt(2 * G1 * c.m / 1.5), kick = +$("expand").value;
+    for (const i of c.idx) { // the packed matter flies apart from where it ignited
+      const dx = md(P.x[i] - cx), dy = md(P.y[i] - cy), a = Math.hypot(dx, dy) > 0.02 ? Math.atan2(dy, dx) : Math.random() * 6.28, f = 0.4 + Math.random() * 0.6;
+      P.own[i] = id; P.vx[i] = vx + kick * esc * Math.cos(a) * f; P.vy[i] = vy + kick * esc * Math.sin(a) * f;
+    }
+    sim.bangs++; spawnRing(u);
+    if (rebounce) logEvent(`Big bang #${sim.bangs}: ${u.ours ? "our universe's" : "a universe's"} core fell back to ${(c.m / sim.coreRef).toFixed(2)}× newborn density and re-ignited.`);
+    else {
+      logEvent(`Big bang #${sim.bangs}: matter from ${parents.length} universes packed to ${(c.m / sim.coreRef).toFixed(2)}× a newborn core and ignited as a new universe.`);
+      if (parents.some((o) => o.ours)) logEvent("Some of our universe's matter went into it.");
     }
   }
-  const self = G * o.m / (o.r * o.r * o.r);
-  return { o, near, txx: txx / self, txy: txy / self, tyy: tyy / self };
 }
 
 /* --- three.js scene --- */
 const vp = $("vp");
-let renderer, scene, camera, sheet, sheetWire, heights, ourRing, ringPos, shadedMat, flatMat, dots;
-const MAXDOTS = 200 * 13;
+let renderer, scene, camera, sheet, sheetWire, shadedMat, flatMat, dots;
 const cam = { theta: 0, phi: 0.02, dist: 290 };
 const tmpColor = new THREE.Color();
 const COL_OTHER = new THREE.Color("#E8963F"), COL_OURS = new THREE.Color("#3CC4C1"), COL_NEW = new THREE.Color("#FFE7A8");
-const circleGeo = (() => { const g = new THREE.BufferGeometry(), p = new Float32Array(65 * 3); for (let k = 0; k <= 64; k++) { const a = (k / 64) * Math.PI * 2; p[k * 3] = Math.cos(a); p[k * 3 + 2] = Math.sin(a); } g.setAttribute("position", new THREE.BufferAttribute(p, 3)); return g; })();
-const sphereGeo = new THREE.SphereGeometry(1, 28, 20);
-
+const toWorld = (g) => g * SC - HALF;
 function initScene() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -597,134 +901,96 @@ function initScene() {
   sheet = new THREE.Mesh(geo, flatMat);
   sheetWire = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x5b7aa8, wireframe: true, transparent: true, opacity: 0.14 }));
   scene.add(sheet, sheetWire);
-  heights = new Float32Array(geo.attributes.position.count);
-  const ringGeo = new THREE.BufferGeometry();
-  ringPos = new Float32Array(97 * 3);
-  ringGeo.setAttribute("position", new THREE.BufferAttribute(ringPos, 3));
-  ourRing = new THREE.Line(ringGeo, new THREE.LineBasicMaterial({ color: 0x5ff0ea }));
-  scene.add(ourRing);
   const dg = new THREE.BufferGeometry();
-  dg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(MAXDOTS * 3), 3));
-  dg.setAttribute("color", new THREE.BufferAttribute(new Float32Array(MAXDOTS * 3), 3));
-  dots = new THREE.Points(dg, new THREE.PointsMaterial({ size: 2.6, vertexColors: true, transparent: true, opacity: 0.9, sizeAttenuation: true }));
+  dg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(MAXP * 3), 3));
+  dg.setAttribute("color", new THREE.BufferAttribute(new Float32Array(MAXP * 3), 3));
+  dots = new THREE.Points(dg, new THREE.PointsMaterial({ size: 2.4, vertexColors: true, transparent: true, opacity: 0.95, sizeAttenuation: true }));
   scene.add(dots);
   resize();
 }
-let frameWeights = [];
-function potentialAt(x, y) {
-  let p = 0;
-  sim.bodies.forEach((b, i) => {
-    const dx = mi(b.x - x), dy = mi(b.y - y), d2 = dx * dx + dy * dy, s2 = blobOf(b) ** 2;
-    if (d2 > 9 * b.r * b.r) { p -= b.m / Math.sqrt(d2 + s2); return; }
-    for (const [ox, oy, wm] of frameWeights[i]) { const ex = mi(b.x + ox - x), ey = mi(b.y + oy - y); p -= wm / Math.sqrt(ex * ex + ey * ey + s2); }
-  });
-  return p * 7 * DEPTH;
+let depthScale = 1, minPhi = 0, maxPhi = 1;
+function wellDepth(gx, gy) { // height of the sheet at a grid position
+  if (sim.flat || !sim.field) return 0;
+  return (TwoSheet.interp(sim.field.phi, gx, gy) - maxPhi) * depthScale;
 }
-let zOffset = 0;
-const surfaceY = (x, y) => (sim.flat ? 0 : potentialAt(x, y) + zOffset);
 function updateSheet() {
-  const pos = sheet.geometry.attributes.position, col = sheet.geometry.attributes.color;
-  let maxP = -Infinity, minP = Infinity;
-  for (let i = 0; i < pos.count; i++) { const p = potentialAt(pos.getX(i), -pos.getZ(i)); heights[i] = p; if (p > maxP) maxP = p; if (p < minP) minP = p; }
-  zOffset = -maxP;
-  const span = Math.max(1e-6, maxP - minP);
+  const pos = sheet.geometry.attributes.position, col = sheet.geometry.attributes.color, phi = sim.field.phi;
+  minPhi = Infinity; maxPhi = -Infinity;
+  for (let i = 0; i < phi.length; i++) { if (phi[i] < minPhi) minPhi = phi[i]; if (phi[i] > maxPhi) maxPhi = phi[i]; }
+  const span = Math.max(1e-9, maxPhi - minPhi);
+  depthScale = 40 / span;
   for (let i = 0; i < pos.count; i++) {
-    pos.setY(i, sim.flat ? 0 : heights[i] + zOffset);
-    const t = Math.pow((maxP - heights[i]) / span, 0.45);
+    const gx = gw((pos.getX(i) + HALF) / SC), gy = gw((-pos.getZ(i) + HALF) / SC), p = TwoSheet.interp(phi, gx, gy);
+    pos.setY(i, sim.flat ? 0 : (p - maxPhi) * depthScale);
+    const t = Math.pow(Math.max(0, (maxPhi - p) / span), 0.5);
     tmpColor.setRGB(0.07 + 0.2 * t, 0.11 + 0.46 * t, 0.2 + 0.42 * t);
     col.setXYZ(i, tmpColor.r, tmpColor.g, tmpColor.b);
   }
   pos.needsUpdate = true; col.needsUpdate = true;
   if (!sim.flat) sheet.geometry.computeVertexNormals();
   sheet.material = sim.flat ? flatMat : shadedMat;
-  sheetWire.material.opacity = sim.flat ? 0.08 : 0.14;
+  sheetWire.material.opacity = sim.flat ? 0.06 : 0.14;
 }
-function meshFor(b) {
-  if (!b.mesh) {
-    b.mesh = new THREE.Mesh(sphereGeo, new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.1 }));
-    b.edge = new THREE.Line(circleGeo, new THREE.LineBasicMaterial({ color: 0xE8963F, transparent: true, opacity: 0.55 }));
-    const tg = new THREE.BufferGeometry(); tg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(TRAIL * 3), 3));
-    b.trailLine = new THREE.Line(tg, new THREE.LineBasicMaterial({ color: 0x6f86ad, transparent: true, opacity: 0.35 }));
-    scene.add(b.mesh, b.edge, b.trailLine);
+function colorOf(u) {
+  const base = u.ours ? COL_OURS : COL_OTHER;
+  return u.born > 0 ? tmpColor.copy(base).lerp(COL_NEW, Math.min(1, u.born / 1.5)) : tmpColor.copy(base);
+}
+function updateDots() {
+  const pos = dots.geometry.attributes.position.array, col = dots.geometry.attributes.color.array;
+  for (let i = 0; i < P.n; i++) {
+    const u = sim.unis.get(P.own[i]), c = u ? colorOf(u) : COL_OTHER;
+    pos[i * 3] = toWorld(P.x[i]); pos[i * 3 + 1] = wellDepth(P.x[i], P.y[i]) + 1.0; pos[i * 3 + 2] = -toWorld(P.y[i]);
+    col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
   }
-  return b.mesh;
+  dots.geometry.setDrawRange(0, P.n);
+  dots.geometry.attributes.position.needsUpdate = true; dots.geometry.attributes.color.needsUpdate = true;
 }
-function removeBody(b) {
-  for (const k of ["mesh", "edge", "trailLine"]) if (b[k]) { scene.remove(b[k]); b[k].material.dispose(); if (k === "trailLine") b[k].geometry.dispose(); b[k] = null; }
+function updateEdges() {
+  const show = $("edges").checked;
+  for (const u of sim.unis.values()) {
+    if (!u.edge) {
+      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array((BINS + 1) * 3), 3));
+      u.edge = new THREE.Line(g, new THREE.LineBasicMaterial({ transparent: true, opacity: 0.7 })); scene.add(u.edge);
+    }
+    u.edge.visible = show && !!u.outline;
+    if (!u.edge.visible) continue;
+    u.edge.material.color.copy(colorOf(u)); u.edge.material.opacity = u.ours ? 1 : 0.55;
+    const a = u.edge.geometry.attributes.position.array;
+    for (let b = 0; b <= BINS; b++) {
+      const bb = b % BINS, ang = ((bb + 0.5) / BINS) * 2 * Math.PI - Math.PI, r = u.outline[bb] * 1.08;
+      const gx = u.cx + r * Math.cos(ang), gy = u.cy + r * Math.sin(ang);
+      a[b * 3] = toWorld(u.cx) + r * SC * Math.cos(ang); a[b * 3 + 1] = wellDepth(gw(gx), gw(gy)) + 1.4; a[b * 3 + 2] = -(toWorld(u.cy) + r * SC * Math.sin(ang));
+    }
+    u.edge.geometry.attributes.position.needsUpdate = true;
+  }
 }
-function spawnRing(b) {
+function removeUni(u) { if (u.edge) { scene.remove(u.edge); u.edge.geometry.dispose(); u.edge.material.dispose(); } sim.unis.delete(u.id); }
+function spawnRing(u) {
   const g = new THREE.RingGeometry(0.9, 1, 64); g.rotateX(-Math.PI / 2);
   const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffe7a8, transparent: true, opacity: 1, side: THREE.DoubleSide }));
-  scene.add(mesh); sim.rings.push({ mesh, x: b.x, y: b.y, t: 0 });
+  scene.add(mesh); sim.rings.push({ mesh, x: u.cx, y: u.cy, t: 0 });
 }
-let trailTick = 0;
-function updateMeshes(dt) {
-  const showTrails = $("trails").checked;
-  trailTick += dt;
-  const pushTrail = trailTick > 0.08; if (pushTrail) trailTick = 0;
-  for (const b of sim.bodies) {
-    const m = meshFor(b);
-    const inflate = b.born > 0 ? 1 + 0.5 * Math.sin(Math.PI * Math.min(1, b.born / 2.5)) : 1;
-    const r = b.r * 0.26 * inflate, y = surfaceY(b.x, b.y);
-    m.scale.setScalar(r);
-    m.position.set(b.x, y + r * 0.6, -b.y);
-    b.edge.scale.setScalar(b.r); b.edge.position.set(b.x, y + 0.6, -b.y);
-    const base = b.ours ? COL_OURS : COL_OTHER;
-    b.edge.material.color.copy(base);
-    if (b.born > 0) { m.material.color.copy(base).lerp(COL_NEW, Math.min(1, b.born / 1.5)); m.material.emissive.copy(COL_NEW).multiplyScalar(Math.min(1, b.born / 2.5) * 0.8); }
-    else { m.material.color.copy(base); m.material.emissive.setRGB(0, 0, 0); if (b.ours) m.material.emissive.copy(COL_OURS).multiplyScalar(0.25); }
-    // trails (break the line where the body wrapped around the sheet)
-    if (pushTrail && sim.running) { b.trail.push([b.x, b.y]); if (b.trail.length > TRAIL) b.trail.shift(); }
-    b.trailLine.visible = showTrails && b.trail.length > 1;
-    if (b.trailLine.visible) {
-      const p = b.trailLine.geometry.attributes.position.array; let cut = 0;
-      for (let k = b.trail.length - 1; k > 0; k--) if (Math.abs(b.trail[k][0] - b.trail[k - 1][0]) > HALF || Math.abs(b.trail[k][1] - b.trail[k - 1][1]) > HALF) { cut = k; break; }
-      const pts = b.trail.slice(cut);
-      for (let k = 0; k < TRAIL; k++) { const q = pts[Math.min(k, pts.length - 1)]; p[k * 3] = q[0]; p[k * 3 + 1] = surfaceY(q[0], q[1]) + 0.4; p[k * 3 + 2] = -q[1]; }
-      b.trailLine.geometry.attributes.position.needsUpdate = true;
-      b.trailLine.geometry.setDrawRange(0, pts.length);
-    }
-  }
+function updateRings(dt) {
   for (let k = sim.rings.length - 1; k >= 0; k--) {
     const R = sim.rings[k]; R.t += dt;
-    R.mesh.scale.setScalar(4 + R.t * 70);
-    R.mesh.position.set(R.x, surfaceY(R.x, R.y) + 1.5, -R.y);
+    R.mesh.scale.setScalar(3 + R.t * 50);
+    R.mesh.position.set(toWorld(R.x), wellDepth(R.x, R.y) + 1.5, -toWorld(R.y));
     R.mesh.material.opacity = Math.max(0, 1 - R.t / 1.4);
     if (R.t > 1.4) { scene.remove(R.mesh); R.mesh.geometry.dispose(); R.mesh.material.dispose(); sim.rings.splice(k, 1); }
   }
 }
-function updateWeightDots() {
-  const pos = dots.geometry.attributes.position.array, col = dots.geometry.attributes.color.array; let n = 0;
-  sim.bodies.forEach((b, i) => {
-    const c = b.ours ? COL_OURS : COL_OTHER;
-    for (const [ox, oy, wm] of frameWeights[i]) {
-      if (n >= MAXDOTS) return;
-      const x = b.x + ox, y = b.y + oy, bright = 0.55 + 0.45 * Math.min(1, wm / (0.28 * b.m) * 1.6);
-      pos[n * 3] = x; pos[n * 3 + 1] = surfaceY(x, y) + 1.2; pos[n * 3 + 2] = -y;
-      col[n * 3] = c.r * bright; col[n * 3 + 1] = c.g * bright; col[n * 3 + 2] = c.b * bright; n++;
-    }
-  });
-  dots.geometry.setDrawRange(0, n);
-  dots.geometry.attributes.position.needsUpdate = true; dots.geometry.attributes.color.needsUpdate = true;
-}
-function updateTide() {
-  const t = tideOnOurs();
-  if (!t) { ourRing.visible = false; $("ourTag").hidden = true; $("sTide").textContent = "–"; $("sNear").textContent = "–"; return; }
-  ourRing.visible = true;
-  const { o, txx, txy, tyy } = t;
-  const R = o.r * 1.3, gain = 6, baseY = surfaceY(o.x, o.y) + 0.9;
-  for (let k = 0; k <= 96; k++) {
-    const a = (k / 96) * Math.PI * 2, px = Math.cos(a), py = Math.sin(a);
-    let ex = (txx * px + txy * py) * gain, ey = (txy * px + tyy * py) * gain;
-    const mag = Math.hypot(ex, ey); if (mag > 0.8) { ex *= 0.8 / mag; ey *= 0.8 / mag; }
-    ringPos[k * 3] = o.x + R * (px + ex); ringPos[k * 3 + 1] = baseY; ringPos[k * 3 + 2] = -(o.y + R * (py + ey));
-  }
-  ourRing.geometry.attributes.position.needsUpdate = true;
-  const det = Math.sqrt(((txx - tyy) / 2) ** 2 + txy * txy);
-  const ratio = 2 * det; // strongest minus weakest tidal pull on our edge, in units of our own gravity there
-  $("sTide").textContent = ratio >= 10 ? Math.round(ratio) + "×" : ratio.toFixed(2) + "×";
-  $("sNear").textContent = t.near;
-  const v = new THREE.Vector3(o.x, baseY + o.r * 1.2, -o.y).project(camera), tag = $("ourTag");
+function updateStats() {
+  let total = 0; for (let i = 0; i < P.n; i++) total += P.m[i];
+  $("sCount").textContent = sim.unis.size; $("sBangs").textContent = sim.bangs;
+  $("sPeak").textContent = sim.peak != null ? sim.peak.toFixed(2) + "×" : "–"; $("sMass").textContent = total.toFixed(1);
+  const o = [...sim.unis.values()].find((u) => u.ours), tag = $("ourTag");
+  if (!o || !o.outline) { $("sSize").textContent = "–"; $("sShape").textContent = "–"; $("sCore").textContent = "–"; tag.hidden = true; return; }
+  if (!sim.our0) sim.our0 = { r: o.r, inner: o.inner };
+  $("sSize").textContent = (o.r / sim.our0.r).toFixed(1) + "×";
+  $("sShape").textContent = Math.round(100 * o.stretch) + "%";
+  sim.coreAvg = sim.coreAvg == null ? o.inner : sim.coreAvg * 0.9 + o.inner * 0.1; // smoothed, so passing clumps don't make it jump
+  $("sCore").textContent = Math.round(100 * sim.coreAvg / sim.our0.inner) + "%";
+  const v = new THREE.Vector3(toWorld(o.cx), wellDepth(o.cx, o.cy) + 4, -toWorld(o.cy) - o.r * SC * 1.15).project(camera);
   tag.hidden = v.z > 1;
   tag.style.left = ((v.x + 1) / 2 * vp.clientWidth) + "px";
   tag.style.top = ((1 - v.y) / 2 * vp.clientHeight) + "px";
@@ -737,45 +1003,46 @@ function placeCamera() {
 }
 function resize() { const w = vp.clientWidth, h = vp.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 function reset() {
-  for (const b of sim.bodies) removeBody(b);
+  for (const u of [...sim.unis.values()]) removeUni(u);
   for (const R of sim.rings) scene.remove(R.mesh);
-  sim.bodies = []; sim.rings = []; sim.bangs = 0;
-  const ours = addBody({ x: 0, y: 0, m: 1, vx: 0, vy: 0, ours: true });
-  sim.core0 = ours.m / (ours.r * ours.r); sim.t = 0; sim.collided = new Set();
-  for (let k = 1; k < +$("nUni").value; k++) addBody(randomFreeSpot(0.35 + Math.random() * 2.2));
-  $("log").innerHTML = "<div>Sheet reset.</div>";
+  sim.rings = []; sim.bangs = 0; sim.t = 0; P.n = 0; sim.our0 = null; sim.coreAvg = null;
+  bigBang(GN / 2, GN / 2, 1, { ours: true });
+  { let m = 0; for (let i = 0; i < P.n; i++) if (Math.hypot(md(P.x[i] - GN / 2), md(P.y[i] - GN / 2)) < 1.13) m += P.m[i]; sim.coreRef = m; } // mass in one patch at a newborn's core
+  for (let k = 1; k < +$("nUni").value; k++) { const [x, y] = freeSpot(); bigBang(x, y, 0.4 + Math.random() * 1.6, { vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6 }); }
+  sim.field = TwoSheet.wellField(P.x, P.y, P.m, P.n, SOFT1);
+  measureShapes();
+  $("log").innerHTML = "<div>Every universe has just had its own big bang.</div>";
 }
-let last = performance.now(), sheetTick = 0;
+let last = performance.now(), tick = 0;
 function frame(now) {
   const dtReal = Math.min(0.05, (now - last) / 1000); last = now;
   if (sim.running) {
-    const dt = dtReal * +$("spd").value;
-    for (let s = 0; s < 3; s++) step(dt / 3);
+    const dt = dtReal * +$("spd").value * 0.6;
+    for (let s = 0; s < 2; s++) step(dt / 2);
+    for (const u of sim.unis.values()) if (u.born > 0) u.born = Math.max(0, u.born - dtReal);
+    for (const u of sim.unis.values()) u.age = (u.age || 0) + dt;
+    if (++tick % 3 === 0) { measureShapes(); densityBangs(); }
   }
-  frameWeights = sim.bodies.map(weightsOf);
-  if (++sheetTick % 2 === 0 || !sim.running) updateSheet(); // the sheet is the costly part; every other frame is smooth enough
-  updateMeshes(sim.running ? dtReal : 0); updateTide(); updateWeightDots();
-  $("sCount").textContent = sim.bodies.length; $("sBangs").textContent = sim.bangs;
-  $("sMass").textContent = sim.bodies.reduce((t, b) => t + b.m, 0).toFixed(1);
-  { const o = sim.bodies.find((b) => b.ours); $("sCore").textContent = o ? (100 * (o.m / (o.r * o.r)) / sim.core0).toFixed(o.m / (o.r * o.r) / sim.core0 < 0.1 ? 1 : 0) + "%" : "–"; }
+  if (sim.field) { if (tick % 2 === 0 || !sim.running) updateSheet(); updateDots(); updateEdges(); updateStats(); }
+  updateRings(sim.running ? dtReal : 0);
   placeCamera(); renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
 function wireSheetUI() {
-  bindOut("reach", (v) => (v >= 100 ? "unlimited" : v + " units"));
   bindOut("nUni", (v) => v);
-  bindOut("thr", (v) => v + "%");
-  bindOut("hub", (v) => v.toFixed(3));
+  bindOut("thr", (v) => v.toFixed(2) + "×");
+  bindOut("expand", (v) => v.toFixed(2) + "×");
   bindOut("spd", (v) => v.toFixed(1) + "×");
   $("pause").textContent = sim.running ? "Pause" : "Play";
   $("pause").onclick = () => { sim.running = !sim.running; $("pause").textContent = sim.running ? "Pause" : "Play"; };
-  $("drop").onclick = () => { addBody(randomFreeSpot(1)); logEvent("You added a new universe (+1.0 mass)."); };
+  $("drop").onclick = () => { const [x, y] = freeSpot(); bigBang(x, y, 1, { flash: true }); logEvent("You added a new universe (+1.0 mass)."); };
   $("reset").onclick = reset;
   $("viewBtn").onclick = () => {
     sim.flat = !sim.flat;
     $("viewBtn").setAttribute("aria-pressed", String(!sim.flat));
     $("viewBtn").textContent = sim.flat ? "Dented view" : "Flat view";
     cam.phi = sim.flat ? 0.02 : 1.0; cam.theta = sim.flat ? 0 : 0.6;
+    updateSheet();
   };
   $("zoomIn").onclick = () => (cam.dist *= 0.85);
   $("zoomOut").onclick = () => (cam.dist /= 0.85);
@@ -1095,8 +1362,106 @@ bindOut("oDen", (v) => fmtSci(10 ** v) + "×", drawOverlap);
 $("oFit").onclick = () => { let best = [Infinity, 0]; for (let lg = 0; lg <= 7; lg += 0.01) { const e = rmsOverlap(10 ** lg); if (e < best[0]) best = [e, lg]; } $("oDen").value = best[1]; drawOverlap(); };
 $("oReset").onclick = () => { $("oDen").value = 0; drawOverlap(); };
 
+/* ================= Simulation 2: two sheets forming galaxies ================= */
+const TSN = TwoSheet.N, TS_DT = 0.05, TS_END = 30;
+const ts = { sim: null, running: true, visible: false, view: "both", hist: [], meas: null, rot: null, steps: 0 };
+function tsOpts() { return { hiddenMass: +$("tsMass").value, gap: +$("tsGap").value, cross: $("tsCross").checked, coolHidden: $("tsCool").checked ? 2 : 0, seed: 1 + Math.floor(Math.random() * 1000) }; }
+function tsRestart() { ts.sim = TwoSheet.create(tsOpts()); ts.hist = []; ts.meas = null; ts.rot = null; ts.steps = 0; tsMeasure(); tsDraw(); tsCharts(); }
+function tsMeasure() {
+  const m = TwoSheet.measure(ts.sim);
+  ts.meas = m; ts.hist.push([m.t, m.alignment]);
+  const g = m.galaxies[0];
+  ts.rot = g ? TwoSheet.rotation(ts.sim, g.cx, g.cy, 14) : null;
+  const compact = m.galaxies.filter((x) => x.visHalf < 3), top = compact.length ? compact.slice(0, 5) : m.galaxies.slice(0, 5);
+  const med = (k) => { const a = top.map((x) => x[k]).sort((a, b) => a - b); return a[Math.floor(a.length / 2)]; };
+  const formed = m.t > 9 && compact.length >= 2; // judge only the clumps that have collapsed into real galaxies
+  const visH = Math.max(0.5, med("visHalf")), hidH = med("hidHalf"), sizeRatio = hidH / visH, massRatio = med("hidMass") / Math.max(1e-9, med("visMass"));
+  let flat = null;
+  if (formed && ts.rot) { const pT = Math.max(...ts.rot.tot), pS = Math.max(...ts.rot.self), i = ts.rot.r.length - 1; flat = { tot: ts.rot.tot[i] / pT, self: ts.rot.self[i] / pS }; }
+  $("tsTime").textContent = m.t.toFixed(0);
+  $("tsAlign").textContent = m.alignment.toFixed(2);
+  $("tsSize").textContent = formed ? (sizeRatio >= 10 ? "10×+" : sizeRatio.toFixed(1) + "×") : "–";
+  $("tsFlat").textContent = flat ? flat.tot.toFixed(2) : "–";
+  $("tsrAlign").textContent = m.alignment.toFixed(2) + (ts.sim.o.cross ? "" : " (control)");
+  $("tsrVis").textContent = formed ? (med("visHalf") < 0.5 ? "under 0.5 cells" : med("visHalf").toFixed(1) + " cells") : "not formed yet";
+  $("tsrHid").textContent = formed ? hidH.toFixed(1) + " cells" : "–";
+  $("tsrMass").textContent = formed ? massRatio.toFixed(1) + "×" : "–";
+  $("tsrFlat").textContent = flat ? `${flat.tot.toFixed(2)} (ours alone ${flat.self.toFixed(2)})` : "–";
+  const v = $("tsVerdict"), al = m.alignment;
+  if (!formed) { v.className = "verdict warn"; v.textContent = m.t < 9 ? "Lumps are growing on both sheets. Galaxies form after about time 10." : "No compact galaxies yet. With a wide gap or little hidden mass, this takes longer or doesn't happen."; }
+  else if (!ts.sim.o.cross) { v.className = "verdict warn"; v.textContent = `Control run: with no gravity across the gap, the sheets stay unrelated (lined up ${al.toFixed(2)}). The hidden matter around each galaxy is just whatever happens to be there, so any alignment in the real runs comes from gravity across the gap.`; }
+  else if (al > 0.7 && sizeRatio > 2 && flat && flat.tot > flat.self + 0.15) { v.className = "verdict good"; v.textContent = `Yes. The sheets lined up (${al.toFixed(2)}) from unrelated starting lumps. Each galaxy sits at the centre of a hidden halo about ${sizeRatio >= 10 ? "10 or more" : sizeRatio.toFixed(0)} times wider, holding ${massRatio.toFixed(1)}× its mass, and the rotation curve is flatter (${flat.tot.toFixed(2)} vs ${flat.self.toFixed(2)} for our matter alone).`; }
+  else if (al > 0.7) { v.className = "verdict warn"; v.textContent = `The sheets lined up (${al.toFixed(2)}), but the hidden halos are ${sizeRatio < 2 ? "almost as compact as the galaxies" : "not adding much"}, so the curve is only ${flat ? flat.tot.toFixed(2) : "–"} flat (${flat ? flat.self.toFixed(2) : "–"} without them).${ts.sim.o.coolHidden ? " Hidden matter that cools collapses like ours instead of forming a wide halo." : " Try more hidden mass."}`; }
+  else { v.className = "verdict"; v.textContent = `The sheets are only weakly lined up (${al.toFixed(2)}). ${ts.sim.o.gap > 12 ? "The gap is too wide for the sheets to shape each other." : "The hidden sheet is too light to pull our matter into its wells."}`; }
+}
+const tsCanvas = $("tsCanvas"), tsCtx = tsCanvas.getContext("2d");
+function tsDraw() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2), W = tsCanvas.clientWidth, H = tsCanvas.clientHeight;
+  if (tsCanvas.width !== Math.round(W * dpr)) { tsCanvas.width = Math.round(W * dpr); tsCanvas.height = Math.round(H * dpr); }
+  const g = tsCtx; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = "#070A11"; g.fillRect(0, 0, W, H);
+  const side = Math.min(W, H) - 8, ox = (W - side) / 2, oy = (H - side) / 2, sc = side / TSN;
+  g.strokeStyle = "#1E2738"; g.strokeRect(ox, oy, side, side);
+  g.globalCompositeOperation = "lighter";
+  const dot = Math.max(1.2, sc * 0.55);
+  const draw = (p, color, alpha, d) => { g.fillStyle = color; g.globalAlpha = alpha; for (let k = 0; k < p.x.length; k++) g.fillRect(ox + p.x[k] * sc - d / 2, oy + p.y[k] * sc - d / 2, d, d); };
+  if (ts.view !== "ours") draw(ts.sim.hid, "#8E6FF0", ts.view === "both" ? 0.35 : 0.6, dot);
+  if (ts.view !== "hid") draw(ts.sim.vis, "#7FF5F0", 0.8, dot * 1.6);
+  g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+  if (ts.meas && ts.meas.t > 9) {
+    g.strokeStyle = "#FFE7A8"; g.lineWidth = 1.5;
+    for (const q of ts.meas.galaxies.slice(0, 5)) { g.beginPath(); g.arc(ox + q.cx * sc, oy + q.cy * sc, Math.max(6, 3 * sc), 0, 2 * Math.PI); g.stroke(); }
+  }
+}
+function tsCharts() {
+  const fg = css("--fg"), muted = css("--muted"), line = css("--line"), hid = css("--hidden");
+  const prep = (cv) => { const dpr = Math.min(window.devicePixelRatio || 1, 2), W = cv.clientWidth, H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H); g.font = `12px ${css("--f-mono")}`; return [g, W, H]; };
+  const axes = (g, W, H, pad, yTicks, yFmt, xMax, xLabel, yLabel) => {
+    g.strokeStyle = line; g.fillStyle = muted; g.lineWidth = 1; g.textAlign = "right"; g.textBaseline = "middle";
+    for (const t of yTicks) { const y = pad.t + (1 - t) * (H - pad.t - pad.b); g.beginPath(); g.moveTo(pad.l, y); g.lineTo(W - pad.r, y); g.stroke(); g.fillText(yFmt(t), pad.l - 6, y); }
+    g.textAlign = "center"; g.textBaseline = "top";
+    for (let k = 0; k <= 4; k++) { const v = (k / 4) * xMax; g.fillText(Math.round(v), pad.l + (k / 4) * (W - pad.l - pad.r), H - pad.b + 6); }
+    g.fillText(xLabel, (pad.l + W - pad.r) / 2, H - 15);
+    g.save(); g.translate(9, (pad.t + H - pad.b) / 2); g.rotate(-Math.PI / 2); g.textBaseline = "middle"; g.fillText(yLabel, 0, 0); g.restore();
+  };
+  { // alignment over time
+    const [g, W, H] = prep($("tsAlignChart")), pad = { l: 56, r: 10, t: 10, b: 36 };
+    axes(g, W, H, pad, [0, 0.25, 0.5, 0.75, 1], (t) => t.toFixed(2), TS_END, "time", "lined up");
+    const X = (t) => pad.l + Math.min(1, t / TS_END) * (W - pad.l - pad.r), Y = (a) => pad.t + (1 - Math.max(0, Math.min(1, a))) * (H - pad.t - pad.b);
+    g.strokeStyle = hid; g.lineWidth = 2.5; g.beginPath(); ts.hist.forEach(([t, a], i) => (i ? g.lineTo(X(t), Y(a)) : g.moveTo(X(t), Y(a)))); g.stroke();
+    if (ts.hist.length) { const [t, a] = ts.hist[ts.hist.length - 1]; g.fillStyle = hid; g.beginPath(); g.arc(X(t), Y(a), 4, 0, 2 * Math.PI); g.fill(); }
+  }
+  { // rotation curve of the largest galaxy, scaled to its peak speed
+    const [g, W, H] = prep($("tsRotChart")), pad = { l: 56, r: 10, t: 10, b: 36 };
+    axes(g, W, H, pad, [0, 0.25, 0.5, 0.75, 1], (t) => t.toFixed(2), 14, "distance from galaxy centre (cells)", "speed vs. peak");
+    if (ts.rot && ts.meas && ts.meas.t > 9) {
+      const X = (r) => pad.l + (r / 14) * (W - pad.l - pad.r), Y = (v) => pad.t + (1 - Math.max(0, Math.min(1.05, v))) * (H - pad.t - pad.b);
+      const line2 = (vals, color, dash) => { const pk = Math.max(...vals) || 1; g.strokeStyle = color; g.lineWidth = 2.5; g.setLineDash(dash); g.beginPath(); ts.rot.r.forEach((r, i) => (i ? g.lineTo(X(r), Y(vals[i] / pk)) : g.moveTo(X(r), Y(vals[i] / pk)))); g.stroke(); g.setLineDash([]); };
+      line2(ts.rot.self, muted, [6, 5]); line2(ts.rot.tot, hid, []);
+    } else { g.fillStyle = muted; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("appears once galaxies form", (pad.l + W - pad.r) / 2, (pad.t + H - pad.b) / 2); }
+  }
+}
+function tsLoop() {
+  if (ts.running && ts.visible && ts.sim.t < TS_END) {
+    for (let k = 0; k < 2; k++) { TwoSheet.step(ts.sim, TS_DT); ts.steps++; }
+    if (ts.steps % 12 === 0 || ts.sim.t >= TS_END) { tsMeasure(); tsCharts(); }
+    tsDraw();
+    if (ts.sim.t >= TS_END) $("tsPause").textContent = "Finished";
+  }
+  requestAnimationFrame(tsLoop);
+}
+for (const [id, view] of [["tsBoth", "both"], ["tsOurs", "ours"], ["tsHid", "hid"]]) $(id).onclick = () => { ts.view = view; for (const b of ["tsBoth", "tsOurs", "tsHid"]) $(b).setAttribute("aria-pressed", String(b === id)); tsDraw(); };
+bindOut("tsMass", (v) => v + "× ours", tsRestart);
+bindOut("tsGap", (v) => v + " cells", tsRestart);
+$("tsCross").onchange = tsRestart; $("tsCool").onchange = tsRestart;
+$("tsPause").onclick = () => { if (ts.sim.t >= TS_END) { tsRestart(); ts.running = true; $("tsPause").textContent = "Pause"; return; } ts.running = !ts.running; $("tsPause").textContent = ts.running ? "Pause" : "Play"; };
+$("tsReset").onclick = () => { tsRestart(); ts.running = true; $("tsPause").textContent = "Pause"; };
+new IntersectionObserver((es) => { ts.visible = es.some((e) => e.isIntersecting); }, { threshold: 0.05 }).observe($("formation"));
+new ResizeObserver(() => tsDraw()).observe(tsCanvas);
+tsRestart(); requestAnimationFrame(tsLoop);
+
 /* redraw on resize / theme change */
-const redrawAll = () => { drawTest1(); drawTest2(); drawWell(); drawOverlap(); };
+const redrawAll = () => { drawTest1(); drawTest2(); drawWell(); drawOverlap(); tsCharts(); };
 new ResizeObserver(() => drawTest1()).observe($("map"));
 new ResizeObserver(() => drawTest2()).observe($("chart2"));
 new ResizeObserver(() => drawWell()).observe($("wellChart"));
