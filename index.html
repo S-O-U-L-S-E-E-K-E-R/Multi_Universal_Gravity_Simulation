@@ -589,6 +589,40 @@ footer { font-size: 14px; color: var(--muted); }
     </div>
   </section>
 
+  <section class="stack" id="tide">
+    <div class="stack prose">
+      <span class="eyebrow">Digging in · the accelerating expansion</span>
+      <span class="scale">Scale: our whole observable universe</span>
+      <h2>Is the expansion speeding up because we're sliding down a bigger well?</h2>
+      <p>The idea: our universe sits on the slope of a bigger well. The side nearer the well falls faster than the far side, so the universe is stretched like spaghetti, and from the middle it looks as if everything is speeding apart. That would replace "dark energy".</p>
+      <p>The strength works out: a neighbour a few tens of times heavier than our observable universe, just past our horizon, stretches us about as much as the measured acceleration. The test is the shape. A tide stretches along one axis and <em>squeezes</em> at right angles, and averaged over the whole sky it adds nothing. Dark energy speeds things up equally in every direction. I fitted both to 1,309 exploding stars (Pantheon+ type Ia supernovae) spread across the sky, letting the tide's axis point anywhere.</p>
+    </div>
+    <div class="score-wrap">
+      <table class="score" style="min-width:560px">
+        <thead><tr><th>Model (matter set to a realistic 30%)</th><th>Fit<small>χ², lower is better</small></th><th>Vs. dark energy<small>BIC gap, above ~10 is decisive</small></th></tr></thead>
+        <tbody>
+          <tr class="winner"><td class="name">Dark energy, the same in every direction</td><td><span class="res"><span>599.7</span></span></td><td><span class="res"><span>best</span></span></td></tr>
+          <tr><td class="name">Tide from a bigger well, no dark energy<span>axis free, 3 extra settings</span></td><td><span class="res"><span>646.7</span></span></td><td><span class="res no"><b>✗ +68.5</b></span></td></tr>
+          <tr><td class="name">No acceleration at all</td><td><span class="res"><span>718.4</span></span></td><td><span class="res no"><b>✗ +118.7</b></span></td></tr>
+          <tr><td class="name">Dark energy plus a tide on top<span>matter free</span></td><td><span class="res"><span>591.6</span></span></td><td><span class="res no"><b>✗ +18.2</b></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="findings">
+      <article class="finding">
+        <span class="pill bad">Fails as the whole story</span>
+        <h3>A tide can't replace dark energy</h3>
+        <p>Stretching helps compared with no acceleration at all, so a tide can mimic part of the effect. But the supernovae show acceleration in every direction, and a tide must squeeze somewhere to stretch somewhere else. Even allowed to point anywhere, it falls decisively short. Letting the tide have no matter to work against (an empty universe) still leaves it 44 BIC points behind.</p>
+        <p>This is the same rule that sank the dark-matter version: gravity from mass outside a region can reshape it but can't add a push that's the same in all directions.</p>
+      </article>
+      <article class="finding">
+        <span class="pill warn">Open and contested</span>
+        <h3>A lopsided acceleration?</h3>
+        <p>Adding a tide on top of dark energy improves the fit only slightly, not enough to count. But one research group (Colin et al. 2019; Sah et al. 2025) reports that the acceleration has a <em>dipole</em>, stronger toward one side of the sky and lined up with our motion, which they tie to large-scale flows of galaxies. Others dispute it. If it holds up, a pull from outside our universe would be one candidate cause, but it would sit on top of dark energy, not replace it.</p>
+      </article>
+    </div>
+  </section>
+
   <section class="stack">
     <div class="stack prose">
       <span class="eyebrow">What the simulation says</span>

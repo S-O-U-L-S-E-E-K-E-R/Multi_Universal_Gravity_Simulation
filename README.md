@@ -53,6 +53,13 @@ trend this version needs. Core sizes that vary by place predict that galaxies ne
 core sizes are ~25% more similar than random pairs (p = 0.003), but after controlling for distance from us the same
 effect is only p = 0.11. Suggestive, not established.
 
+## Accelerating expansion: a tide from a bigger well?
+
+`analysis/supernova_tide_test.py` fits 1,309 Pantheon+ supernovae. A tide (stretching along one axis, squeezing at
+right angles, no dark energy on average) does better than no acceleration at all but is decisively worse than dark
+energy that is the same in every direction (BIC +68.5 with 30% matter; +44 even with no matter). Adding a tide on
+top of dark energy is not supported either (BIC +18).
+
 ## Test suite result
 
 Only a neighbour universe's matter that has expanded into our space and gathered in our galaxies' wells passes all five tests, and only if small galaxies
