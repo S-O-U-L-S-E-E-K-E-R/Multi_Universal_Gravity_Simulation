@@ -35,6 +35,16 @@ Open `index.html` in a browser. It needs no build step. three.js loads from cdnj
 
 `analysis/tidal_check.py` (needs numpy) runs the original far-neighbour test in SI units and prints the numbers.
 `analysis/anomaly_axes.py` (needs numpy) tests whether published cosmic anomaly directions share one axis.
+`analysis/dark_matter_tests.py` (needs numpy) is the test suite: seven versions of "other universes do dark matter's
+job", each fitted on galaxy rotation and then scored, without refitting, against the speed–mass rule, every-galaxy
+coverage, galaxy-cluster mass and the Bullet Cluster.
+
+## Test suite result
+
+Only a stacked hidden sheet whose matter collects under our galaxies passes all five tests, and only if small galaxies
+have also lost part of their ordinary matter (a process the simulations here don't model). Gravity leaking into the
+sheet below a fixed acceleration (MOND-like) matches galaxies but fails clusters and the Bullet Cluster. Neighbours
+beside us, sitting in a bigger well, and overlapping neighbours fail every test.
 
 ## What the tests show so far
 
