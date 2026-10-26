@@ -60,6 +60,12 @@ right angles, no dark energy on average) does better than no acceleration at all
 energy that is the same in every direction (BIC +68.5 with 30% matter; +44 even with no matter). Adding a tide on
 top of dark energy is not supported either (BIC +18).
 
+`analysis/supernova_motion_rotation_test.py` adds a lopsided (near-side stronger) pull, a rotating universe, and our
+own motion left free (raw Sun-centred redshifts). Dark energy stays best in both frames (lopsided well alone +29/+30,
+rotation alone +18/+22, rotation + lopsided well +24 BIC). The supernovae recover our own motion independently
+(250–350 km/s, 19–59° from the CMB direction). CMB limits on uneven expansion and rotation (Saadeh et al. 2016) are
+far stricter still; falling into a bigger well as a whole remains undetectable from inside.
+
 ## Test suite result
 
 Only a neighbour universe's matter that has expanded into our space and gathered in our galaxies' wells passes all five tests, and only if small galaxies

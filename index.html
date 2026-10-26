@@ -157,6 +157,9 @@ footer { font-size: 14px; color: var(--muted); }
 .ts-view:active { cursor: default; }
 .ts-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 18px; }
 .ts-charts h3 { font-size: 0.95rem; }
+.mini { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.mini th, .mini td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.mini th { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .chart.small { height: clamp(200px, 26vw, 260px); }
 </style>
 
@@ -614,6 +617,22 @@ footer { font-size: 14px; color: var(--muted); }
         <h3>A tide can't replace dark energy</h3>
         <p>Stretching helps compared with no acceleration at all, so a tide can mimic part of the effect. But the supernovae show acceleration in every direction, and a tide must squeeze somewhere to stretch somewhere else. Even allowed to point anywhere, it falls decisively short. Letting the tide have no matter to work against (an empty universe) still leaves it 44 BIC points behind.</p>
         <p>This is the same rule that sank the dark-matter version: gravity from mass outside a region can reshape it but can't add a push that's the same in all directions.</p>
+      </article>
+      <article class="finding">
+        <span class="pill bad">Not preferred, and limited by the CMB</span>
+        <h3>Adding a lopsided pull, rotation and our own motion</h3>
+        <p>A big universe close to a well is pulled harder on its near side, so I let the pull be lopsided. A spinning universe adds an outward push that, unlike a well's pull, doesn't cancel out, so it could keep the "sides" accelerating. And because we're moving and can't assume a rest frame, I reran everything from raw Sun-centred redshifts with our velocity left free.</p>
+        <table class="mini">
+          <thead><tr><th>Model (matter 30%)</th><th>Standard frame</th><th>Our motion free</th></tr></thead>
+          <tbody>
+            <tr><td>Dark energy, same everywhere</td><td>best</td><td>best</td></tr>
+            <tr><td>Lopsided well alone</td><td>+30</td><td>+29</td></tr>
+            <tr><td>Rotation alone</td><td>+22</td><td>+18</td></tr>
+            <tr><td>Rotation + lopsided well</td><td>+24</td><td>+24</td></tr>
+          </tbody>
+        </table>
+        <p>(BIC gaps vs dark energy; above ~10 is decisive.) Rotation plus a lopsided pull fits slightly better than dark energy (χ² 590 vs 595) but uses four more settings, so the gain is consistent with chance. With our motion left free, the supernovae find it on their own: 250–350 km/s, within 19–59° of the motion measured from the CMB (370 km/s).</p>
+        <p>The CMB, a snapshot of our whole observable universe at once, is stricter still. It limits uneven expansion to under about 5 parts in 100 billion and rotation to under about a billionth of the expansion rate (Saadeh et al. 2016), while replacing dark energy would need both to be roughly as large as the expansion itself. Falling into a bigger well <em>as a whole</em> stays possible, because that can't be seen from inside at all.</p>
       </article>
       <article class="finding">
         <span class="pill warn">Open and contested</span>
